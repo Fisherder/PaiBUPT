@@ -8,6 +8,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "输入界面",
+          "pathName": "pages/logIn/logIn",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "用户信息",
           "pathName": "pages/personalInfo/personalInfo",
           "query": "",

@@ -1,2 +1,3 @@
 <!--pages/personalInfo/personalInfo.wxml-->
-<button bind:tap="logIn">点击登录</button>
+<button bind:tap="goToLogIn">点击登录</button>
+<!-- <button bind:tap="register">点击注册</button> -->

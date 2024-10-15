@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/addGoods/addGoods",
+    "pages/personalInfo/personalInfo"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "邮拍",
+    "navigationBarBackgroundColor": "#87CEFA"
+  },
+  "tabBar": {
+    "backgroundColor": "#87CEFA",
+    "selectedColor": "#228B22",
+    "color": "#FFFFFF",
+    "list": [{
+      "pagePath": "pages/home/home",
+      "text": "首页",
+      "iconPath": "images/tars/home.png",
+      "selectedIconPath": "images/tars/homeSelect.png"
+    },{
+      "pagePath": "pages/addGoods/addGoods",
+      "text": "上传商品",
+      "iconPath": "images/tars/add.png",
+      "selectedIconPath": "images/tars/addSelect.png"
+    },{
+      "pagePath": "pages/personalInfo/personalInfo",
+      "text": "个人信息",
+      "iconPath": "images/tars/personalInfo.png",
+      "selectedIconPath": "images/tars/personalInfoSelect.png"
+    }]
+  },
+  "usingComponents": {
+    "test1" : "/components/test1/test1"
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

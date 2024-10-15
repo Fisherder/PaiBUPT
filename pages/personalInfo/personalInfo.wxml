@@ -1,0 +1,2 @@
+<!--pages/personalInfo/personalInfo.wxml-->
+<button bind:tap="logIn">点击登录</button>

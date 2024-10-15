@@ -1,0 +1,4 @@
+<!--components/test1/test1.wxml-->
+<view>{{a}} + {{b}} = {{sum}}</view>
+<button bind:tap="addA">a自增1</button>
+<button bind:tap="addB">b自增1</button>

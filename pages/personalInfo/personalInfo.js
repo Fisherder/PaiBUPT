@@ -9,7 +9,7 @@ Page({
   data: {
     hasUserInfo: false, // 标记是否已经获取到用户信息
     userInfo: null, // 存储用户信息
-  },
+ },
   onLoad() {
     if (app.globalData.userInfo) {
       this.setData({
@@ -46,7 +46,7 @@ Page({
           });
       }
     })
-  },
+ },
   /**
    * 生命周期函数--监听页面加载
    */

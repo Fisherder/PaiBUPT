@@ -4,7 +4,7 @@
     "pages/addGoods/addGoods",
     "pages/personalInfo/personalInfo",
     "pages/logIn/logIn"
-  ],
+ ],
   "window": {
     "navigationBarTextStyle": "white",
     "navigationBarTitleText": "邮拍",

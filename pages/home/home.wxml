@@ -1,3 +1,1 @@
 <!--pages/home/home.wxml-->
-<navigator url="/pages/test/test" open-type="navigate">跳转到test</navigator>
-<test1></test1>

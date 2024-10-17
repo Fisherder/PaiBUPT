@@ -1,14 +1,24 @@
 // pages/logIn/logIn.js
+const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+
 Page({
 
   /**
+   * 
    * 页面的初始数据
    */
   data: {
+    avatarUrl: defaultAvatarUrl,//图片信息
     nickName: '',
     phoneNumber: '',
     isPhoneError: false,        // 是否显示手机号错误
     phoneErrorMessage: '',      // 手机号错误提示
+  },
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail 
+    this.setData({
+      avatarUrl,
+    })
   },
   // 监听手机号输入
   onPhoneInput(event) {

@@ -1,5 +1,8 @@
 <!--pages/logIn/logIn.wxml-->
 <!-- <text>pages/logIn/logIn.wxml</text> -->
+<button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+  <image class="avatar" src="{{avatarUrl}}"></image>
+</button> 
 <van-cell-group>
   <van-field
     label = "用户名"

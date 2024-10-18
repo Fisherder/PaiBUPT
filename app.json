@@ -8,10 +8,10 @@
   "window": {
     "navigationBarTextStyle": "white",
     "navigationBarTitleText": "邮拍",
-    "navigationBarBackgroundColor": "#87CEFA"
+    "navigationBarBackgroundColor": "#003152"
   },
   "tabBar": {
-    "backgroundColor": "#87CEFA",
+    "backgroundColor": "#003152",
     "selectedColor": "#228B22",
     "color": "#FFFFFF",
     "list": [{

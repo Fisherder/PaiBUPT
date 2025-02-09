@@ -1,9 +1,0 @@
-<!--pages/home/home.wxml-->
-<view class="banner">
-   <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)"
-   indicator-active-color="#fff" circular autoplay interval="4000">
-   <swiper-item><image src="/images/tars/校徽.jpg"></image></swiper-item>
-   <swiper-item><image style="width: 100%;" src="/images/tars/海淀.jpg"></image></swiper-item>
-   <swiper-item><image style="width: 100%;" src="/images/tars/又是海淀.jpg"></image></swiper-item>
-   </swiper>
-</view>

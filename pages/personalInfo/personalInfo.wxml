@@ -1,7 +1,0 @@
-<!--pages/personalInfo/personalInfo.wxml-->
-<!-- <button bind:tap="goToLogIn"></button> -->
-<view id="containerLogIn">
-  <van-button id = "logInButton" type="primary" bind:tap="goToLogIn" round type="info" size="large">点击登录</van-button>
-</view>
-
-<!-- <button bind:tap="register">点击注册</button> -->

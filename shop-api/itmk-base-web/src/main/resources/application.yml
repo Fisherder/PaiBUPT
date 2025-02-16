@@ -1,0 +1,4 @@
+spring:
+  profiles:
+    #表使用test这个文件
+    active: test

@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import MenuLogo from '@/assets/MenuLogo.jpeg'
+import MenuLogo from '@/assets/MenuLogo.png'
 import {watch, ref } from 'vue';
 import { collapseStore } from '../store/collapse/index'
 const store=collapseStore()
@@ -35,7 +35,7 @@ watch(//监视，导航栏展开延时，300是延时时间
     width: 100%;
     height: 60px;
     line-height: 60px;
-    background-color: #FFF;
+    background-color: #304156;
     cursor:pointer;
     align-items: center;
     img{
@@ -44,7 +44,7 @@ watch(//监视，导航栏展开延时，300是延时时间
         margin-left:20px;
     }
     .logo-title{
-        color:black;
+        color:#bfcbd9;
         font-weight:600;
         font-size:22px;
         font-family: FangSong;

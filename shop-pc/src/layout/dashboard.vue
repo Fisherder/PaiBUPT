@@ -20,7 +20,7 @@
 import SysDialog from '@/components/SysDialog.vue';
 import useDialog from '../hooks/useDialog';
 //获取弹框属性
-const{dialog,onClose,onConfirm,onShow} = useDialog()
+const{onClose,onConfirm,onShow,dialog} = useDialog()
 // //定义弹框属性
 // const dialog=reactive({
 //     title:'新增',

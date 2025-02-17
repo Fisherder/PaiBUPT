@@ -85,7 +85,17 @@ title: "广告列表",
 icon: "UserFilled",
 roles: ["sys:bannerList"],
 }
-}
+},
+{
+    path: "/commentList",
+    component: () => import('@/views/comment/CommentList.vue'),
+    name: "commonList",
+    meta: {
+    title: "评论列表",
+    icon: "UserFilled",
+    roles: ["sys:commentList"],
+    }
+    }
 ]
 }
 ]

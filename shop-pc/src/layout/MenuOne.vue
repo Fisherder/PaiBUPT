@@ -40,6 +40,10 @@
     <el-icon><Calendar /></el-icon>
     <template #title>广告管理</template>
     </el-menu-item>
+    <el-menu-item index="/commentList">
+    <el-icon><Calendar /></el-icon>
+    <template #title>评论管理</template>
+    </el-menu-item>
     </el-menu>
     </template>
     <script setup lang="ts">

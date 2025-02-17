@@ -2,8 +2,9 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse,
     import { ElMessage } from 'element-plus';
     //axios请求配置
     const config = {
-    baseURL: 'http://localhost:8089',
+    //baseURL: 'http://localhost:8089',
     //baseURL: '/api',
+    baseURL:import.meta.env.VITE_BASE_API||'http://localhost:8089',
     timeout: 10000
     }
     //定义返回值类型
@@ -133,6 +134,14 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse,
     /* DELETE 方法 */
     delete<T = Result>(url: string): Promise<T> {
     return this.instance.delete(url)
+    }
+    //图片上传
+    upload<T = Result>(url: string, params?: object): Promise<T> {
+    return this.instance.post(url, params, {
+    headers: {
+    'Content-Type': 'multipart/form-data'
+    }
+    })
     }
     }
     export default new Http(config)

@@ -16,3 +16,9 @@ export type ListParm ={
     nickName:string,
     total?:number
 }
+//登录参数
+export type LoginParm ={
+    username:string,
+    password:string,
+    code:string
+}

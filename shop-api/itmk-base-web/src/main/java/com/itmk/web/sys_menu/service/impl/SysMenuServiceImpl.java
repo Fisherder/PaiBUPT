@@ -33,6 +33,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         //组装树形数据,-1是pid父节点
         return MakeMenuTree.makeTree(menuList,-1L);
     }
-
+    @Override
+    public List<SysMenu> getMenuByUserId(Long userId) {
+        return this.baseMapper.getMenuByUserId(userId);
+    }
 
 }

@@ -1,0 +1,13 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itmk.web.user_menu.mapper.UserMenuMapper">
+    <insert id="savaMenu">
+<!--        通过<foreach>标签遍历menuIds集合，动态生成(user_id, menu_id)的多个值元组。-->
+        insert into user_menu(user_id,menu_id) values
+        <foreach collection="menuIds" separator="," item="item" index="index">
+--参数绑定和预编译，userId到userID,item到menuId里
+            (#{userId},#{item})
+        </foreach>
+    </insert>
+</mapper>

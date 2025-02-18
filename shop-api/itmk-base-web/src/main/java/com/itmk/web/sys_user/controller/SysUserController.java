@@ -3,24 +3,39 @@ package com.itmk.web.sys_user.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.itmk.utils.ResultUtils;
 import com.itmk.utils.ResultVo;
+import com.itmk.web.sys_user.entity.LoginParm;
 import com.itmk.web.sys_user.entity.PageParm;
 import com.itmk.web.sys_user.entity.SysUser;
 import com.itmk.web.sys_user.service.SysUserService;
+import com.itmk.web.wx_user.entity.LoginVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.apache.commons.lang.StringUtils;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+import sun.misc.BASE64Encoder;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/sysUser")//后面改跨域配置要和这里一致，捕获所有以该链接发送的请求给SysUserController处理
 public class SysUserController {
     @Autowired
     private SysUserService sysUserService;
+    @Autowired
+    private DefaultKaptcha defaultKaptcha;
     //新增
     @PostMapping
     public ResultVo add(@RequestBody SysUser sysUser) {
+        sysUser.setPassword(DigestUtils.md5DigestAsHex(sysUser.getPassword().getBytes()));
         if(sysUserService.save(sysUser)) {
             return ResultUtils.success("新增成功");
         }
@@ -54,5 +69,71 @@ public class SysUserController {
         //查询
         IPage<SysUser> list = sysUserService.page(page, query);
         return ResultUtils.success("查询成功",list);
+    }
+    //生成验证码
+    @PostMapping("/image")
+    public ResultVo imageCode(HttpServletRequest request){
+        //生成验证码
+        String text=defaultKaptcha.createText();
+        //验证码存到session
+        HttpSession session=request.getSession();
+        session.setAttribute("code",text);
+        //生成图片,转换为base64
+        BufferedImage bufferedImage = defaultKaptcha.createImage(text);
+        ByteArrayOutputStream outputStream = null;
+        try {
+            outputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "jpg", outputStream);
+            BASE64Encoder encoder = new BASE64Encoder();
+            String base64 = encoder.encode(outputStream.toByteArray());
+            String captchaBase64 = "data:image/jpeg;base64," +
+                    base64.replaceAll("\r\n", "");
+            ResultVo result = new ResultVo("生成成功", 200, captchaBase64);
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    //登录
+    @PostMapping("/login")
+    public ResultVo login(@RequestBody LoginParm parm,HttpServletRequest request){
+        //获取session里面的code验证码
+        HttpSession session=request.getSession();
+        String code=(String)session.getAttribute("code");
+        //获取前端传递过来的验证码
+        String codeParm= parm.getCode();
+        if(StringUtils.isEmpty(code)){
+            return ResultUtils.error("验证码过期!");
+        }
+//对比验证码
+        if(!codeParm.equals(code)){
+            return ResultUtils.error("验证码错误!");
+        }
+        //验证用户信息
+        QueryWrapper<SysUser> query = new QueryWrapper<>();
+        query.lambda().eq(SysUser::getUsername,parm.getUsername())
+                .  eq(SysUser::getPassword, DigestUtils.md5DigestAsHex(parm.getPassword().getBytes()));
+        SysUser user=sysUserService.getOne(query);
+        if(user==null){
+            return ResultUtils.error("用户名或密码错误！");
+        }
+        if(user.getStatus().equals("1")){
+            return ResultUtils.error("账户已被停用，请联系管理员！");
+        }
+        //返回登录信息
+        LoginVo vo=new LoginVo();
+        vo.setUserId(user.getUserId());
+        vo.setNickName(user.getNickName());
+        return ResultUtils.success("登录成功",vo);
     }
 }

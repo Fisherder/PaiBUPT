@@ -5,7 +5,9 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse,
     //baseURL: 'http://localhost:8089',
     //baseURL: '/api',
     baseURL:import.meta.env.VITE_BASE_API||'http://localhost:8089',
-    timeout: 10000
+    timeout: 10000,
+    withCredentials:true//解决session不一致
+    
     }
     //定义返回值类型
     //对应后端的ResultVo

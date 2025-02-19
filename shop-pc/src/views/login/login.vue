@@ -83,6 +83,8 @@ const commit=()=>{
             let res=await loginApi(loginModel)
             console.log(res)
             store.setUserId(res.data.userId)
+            store.setCodeList(res.data.codeList)
+            store.setMenuList(res.data.menuList)
             router.push({path:'/home'})
 
         }

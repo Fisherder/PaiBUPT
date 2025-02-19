@@ -5,8 +5,8 @@
             <!-- 表格 -->
     <el-table :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         row-key="menuId" :data="tableList" border stripe>
-        <el-table-column prop="title" label="菜单名称"></el-table-column>
-        <el-table-column prop="type" label="菜单类型">
+        <el-table-column prop="title" label="名称"></el-table-column>
+        <el-table-column prop="type" label="类型">
             <template #default="scope">
                 <el-tag v-if="scope.row.type == '1'" type="success" size="default">菜单
                 </el-tag>
@@ -47,7 +47,7 @@
      >
         <template v-slot:content>
             <el-form :model="addModel" ref="addRef" :rules="rules" label-width="80px" :inline="false" size="default">
-                <el-form-item prop="type" label="菜单类型">
+                <el-form-item prop="type" label="类型">
                     <el-radio-group v-model="addModel.type">
                     <el-radio :value="1">菜单</el-radio>
                     <el-radio :value="2">按钮</el-radio>
@@ -68,7 +68,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :offset="0">
-                        <el-form-item prop="title"label="菜单名称">
+                        <el-form-item prop="title"label="名称">
                             <el-input v-model="addModel.title"></el-input>
                         </el-form-item>
                     </el-col>
@@ -80,7 +80,7 @@
                         </el-form-item>
                         </el-col>
                         <el-col :span="12" :offset="0">
-                            <el-form-item prop="orderNum" label="菜单序号">
+                            <el-form-item prop="orderNum" label="序号">
                             <el-input v-model="addModel.orderNum"></el-input>
                             </el-form-item>
                         </el-col>
@@ -135,7 +135,7 @@ const rules = reactive({
 type: [
 {
 required: true,
-message: "请选择菜单类型",
+message: "请选择类型",
 trigger: "change",
 },
 ],
@@ -149,35 +149,35 @@ trigger: "change",
 title: [
 {
 required: true,
-message: "请填写菜单标题",
+message: "请填写标题",
 trigger: "change",
 },
 ],
 code: [
 {
 required: true,
-message: "请填写菜单权限字段",
+message: "请填写权限字段",
 trigger: "change",
 },
 ],
 icon: [
 {
 required: true,
-message: "请填写菜单图标",
+message: "请填写图标",
 trigger: "change",
 },
 ],
 path: [
 {
 required: true,
-message: "请填写菜单path",
+message: "请填写路径",
 trigger: "change",
 },
 ],
 orderNum: [
 {
 required: true,
-message: "请填写序号",
+message: "请序号",
 trigger: "change",
 },
 ],

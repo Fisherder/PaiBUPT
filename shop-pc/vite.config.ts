@@ -9,20 +9,20 @@ export default defineConfig({
     port: 8080, //配置端口号
     hmr: true, //开启热更新
     open: true //启动在浏览器打开
-    
-    },
-    resolve: {
-      alias: [
+
+  },
+  resolve: {
+    alias: [
       {
-      find: '@',
-      replacement: resolve(__dirname, 'src')
+        find: '@',
+        replacement: resolve(__dirname, 'src')
       }
-      ]
-      },
-      define: {
-        'process.env': {
-        //'BASE_API': "http://192.168.31.70:8089"
-         'BASE_API':"http://localhost:8089"
-        }
-        }
+    ]
+  },
+  define: {
+    'process.env': {
+      //'BASE_API': "http://192.168.31.70:8089"
+      'BASE_API': "http://localhost:8089"
+    }
+  }
 })

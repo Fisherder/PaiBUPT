@@ -24,13 +24,14 @@
             <el-table-column prop="username" label="账户"></el-table-column>
             <el-table-column prop="status" label="状态">
                 <template #default="scope">
-                <el-tag v-if="scope.row.sex == '1'" type="danger"  effect="dark">停用</el-tag>
-                <el-tag v-if="scope.row.sex == '0'"   effect="dark">启用</el-tag>
+                <el-tag v-if="scope.row.status == '1'" type="danger"  effect="dark">停用</el-tag>
+                <el-tag v-if="scope.row.status == '0'"   effect="dark">启用</el-tag>
             </template>
             </el-table-column>
-            <el-table-column label="操作" width="220" align="center">
+            <el-table-column label="操作" width="320" align="center">
                 <template #default="scope">
                     <el-button type="primary" icon="Edit"size="default" @click="editBtn(scope.row)">编辑</el-button>
+                    <el-button type="success" icon="Setting"size="default" @click="assignBtn(scope.row)">分配菜单</el-button>
                     <el-button type="danger" icon="Delete"size="default" @click="deleteBtn(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
@@ -84,6 +85,10 @@
          </el-form>
              </template>
           </SysDialog>
+          <!-- 分配菜单 -->
+           <AssignTree ref="assignTree">
+
+           </AssignTree>
     </el-main>
 </template>
 
@@ -96,6 +101,9 @@ import { addAdminUserApi, getListApi,editApi,deleteApi } from '../../api/user';
 import { type User } from '../../api/user/UserModel';
 import { Title } from '../../type/BaseEnum';
 import useInstance from '../../hooks/useInstance';
+import AssignTree from './AssignTree.vue';
+//分配菜单ref属性
+const assignTree=ref()
 //获取全局属性
 const {global}=useInstance()
 //获取弹框属性
@@ -165,6 +173,12 @@ const editBtn=(row:User)=>{
         //设置数据回显
     Object.assign(addModel,row)
     })
+}
+//分配菜单,父组件调用子组件
+const assignBtn=(row:User)=>{
+    //console.log(row)
+    //console.log(assignTree.value)
+    assignTree.value.show(row)
 }
 //新增，编辑提交
 const commit = ()=>{

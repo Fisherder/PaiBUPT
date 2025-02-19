@@ -19,10 +19,9 @@ public class UserMenuServiceImpl extends ServiceImpl<UserMenuMapper, UserMenu> i
         //删除
         QueryWrapper<UserMenu> query=new QueryWrapper<>();
         query.lambda().eq(UserMenu::getUserId,parm.getAssId());
-        int delete=this.baseMapper.delete(query);
+        this.baseMapper.delete(query);
         //删除成功，插入
-        if(delete>0){
-            this.baseMapper.savaMenu(parm.getAssId(),parm.getList());
-        }
+        this.baseMapper.savaMenu(parm.getAssId(),parm.getList());
+
     }
 }

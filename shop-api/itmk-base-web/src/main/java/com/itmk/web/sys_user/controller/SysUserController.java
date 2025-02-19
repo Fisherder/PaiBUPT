@@ -6,11 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.itmk.utils.ResultUtils;
 import com.itmk.utils.ResultVo;
-import com.itmk.web.sys_user.entity.LoginParm;
-import com.itmk.web.sys_user.entity.PageParm;
-import com.itmk.web.sys_user.entity.SysUser;
+import com.itmk.web.sys_menu.entity.SysMenu;
+import com.itmk.web.sys_menu.service.SysMenuService;
+import com.itmk.web.sys_user.entity.*;
 import com.itmk.web.sys_user.service.SysUserService;
-import com.itmk.web.wx_user.entity.LoginVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.apache.commons.lang.StringUtils;
@@ -24,6 +23,10 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/sysUser")//后面改跨域配置要和这里一致，捕获所有以该链接发送的请求给SysUserController处理
@@ -32,6 +35,8 @@ public class SysUserController {
     private SysUserService sysUserService;
     @Autowired
     private DefaultKaptcha defaultKaptcha;
+    @Autowired
+    private SysMenuService sysMenuService;
     //新增
     @PostMapping
     public ResultVo add(@RequestBody SysUser sysUser) {
@@ -134,6 +139,27 @@ public class SysUserController {
         LoginVo vo=new LoginVo();
         vo.setUserId(user.getUserId());
         vo.setNickName(user.getNickName());
+        //返回用户菜单和按钮
+        List<SysMenu> menuList=null;
+        //是超级管理员
+       if(StringUtils.isNotEmpty(user.getIsAdmin())&&"1".equals(user.getIsAdmin())){
+            menuList=sysMenuService.list();
+       }else{
+           //不是超级管理员单独查询
+           menuList=sysMenuService.getMenuByUserId(user.getUserId());
+       }
+
+        //获取权限字段
+        List<String> codeList= Optional.ofNullable(menuList).orElse(new ArrayList<>())
+                .stream()
+                .map(item->item.getCode()).collect(Collectors.toList());
+        vo.setCodeList(codeList);
+        //获取菜单，构建数据形式
+        List<MenuVo>menuVoList=Optional.ofNullable(menuList).orElse(new ArrayList<>())
+                .stream()
+                .filter(item->item.getType().equals("1"))
+                .map(item->new MenuVo(item.getMenuId(), item.getTitle(), item.getPath(), item.getIcon())).collect(Collectors.toList());
+        vo.setMenuList(menuVoList);
         return ResultUtils.success("登录成功",vo);
     }
 }

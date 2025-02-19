@@ -103,7 +103,7 @@ roles: ["sys:bannerList"],
     component: () => import('@/views/comment/CommentList.vue'),
     name: "commonList",
     meta: {
-    title: "评论列表",
+    title: "评论管理",
     icon: "UserFilled",
     roles: ["sys:commentList"],
     }

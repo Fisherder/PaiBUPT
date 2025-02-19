@@ -9,8 +9,10 @@ import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 //引入pinda构造函数
 import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 // 实例化 Pinia
 const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 const app = createApp(App);
 app.use(router).use(ElementPlus,{
     locale: zhCn,

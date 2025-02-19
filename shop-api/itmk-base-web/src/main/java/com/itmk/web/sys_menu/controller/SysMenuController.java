@@ -9,6 +9,8 @@ import com.itmk.web.sys_menu.entity.SysMenu;
 import com.itmk.web.sys_menu.service.SysMenuService;
 import com.itmk.web.sys_user.entity.SysUser;
 import com.itmk.web.sys_user.service.SysUserService;
+import com.itmk.web.user_menu.entity.AssignParm;
+import com.itmk.web.user_menu.service.UserMenuService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,8 @@ public class SysMenuController {
     private SysMenuService sysMenuService;
     @Autowired
     private SysUserService sysUserService;
+    @Autowired
+    private UserMenuService userMenuService;
 
     //新增
     @PostMapping
@@ -97,5 +101,17 @@ public class SysMenuController {
         });
         vo.setCheckList(ids.toArray());
         return ResultUtils.success("查询成功！",vo);
+    }
+    //分配菜单保存
+    @PostMapping("/assignSave")
+    public ResultVo assignSave(@RequestBody AssignParm parm) {
+//判断是否是超级管理员
+        SysUser user = sysUserService.getById(parm.getAssId());
+        if (user != null && StringUtils.isNotEmpty(user.getIsAdmin()) &&
+                user.getIsAdmin().equals("1")) {
+            return ResultUtils.error("当前用户是超级管理员，无需分配菜单!");
+        }
+        userMenuService.saveMenu(parm);
+        return ResultUtils.success("分配菜单成功!");
     }
 }

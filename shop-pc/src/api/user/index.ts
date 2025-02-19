@@ -1,5 +1,5 @@
 import http from "../../http";
-import type { ListParm, User,LoginParm } from "./UserModel";
+import type { ListParm, User,LoginParm, AssignParm, SaveAssignParm } from "./UserModel";
 
 //新增
 export const addAdminUserApi = (parm:User)=>{
@@ -24,4 +24,12 @@ export const imageApi = ()=>{
 //登录
 export const loginApi = (parm:LoginParm)=>{
     return http.post("/api/sysUser/login",parm)
+}
+//获取树的数据
+export const getAssignTreeApi = (parm:AssignParm)=>{
+    return http.get("/api/menu/getAssignTree",parm)
+}
+//保存分配的菜单
+export const assignSaveApi = (parm:SaveAssignParm)=>{
+    return http.post("/api/menu/assignSave",parm)
 }

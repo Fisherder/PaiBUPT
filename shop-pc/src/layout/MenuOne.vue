@@ -8,11 +8,14 @@
     :default-active="activeIndex"
     class="el-menu-vertical-demo"
     >
-    <el-menu-item index="/dashboard">
-    <el-icon><HomeFilled /></el-icon>
-    <template #title>首页</template>
+    <el-menu-item v-for="item in menuList" :index="item['path']">
+    <el-icon>
+        <component :is="item['icon']">
+        </component>
+    </el-icon>
+    <template #title>{{ item['title'] }}</template>
     </el-menu-item>
-    <el-menu-item index="/adminUser">
+    <!-- <el-menu-item index="/adminUser">
     <el-icon><Histogram /></el-icon>
     <template #title>管理员管理</template>
     </el-menu-item>
@@ -43,15 +46,17 @@
     <el-menu-item index="/commentList">
     <el-icon><Calendar /></el-icon>
     <template #title>评论管理</template>
-    </el-menu-item>
+    </el-menu-item> -->
     </el-menu>
     </template>
     <script setup lang="ts">
     import { collapseStore } from "../store/collapse/index.ts";
     import { useRoute } from "vue-router";
     import MenuLogo from "./MenuLogo.vue";
-    import { Menu, Memo, Monitor, Calendar, Wallet } from "@element-plus/icons-vue";
+    // import { Menu, Memo, Monitor, Calendar, Wallet } from "@element-plus/icons-vue";
     import { computed } from "vue";
+    import { userStore } from "../store/user/index.ts";
+   const ustore=userStore()
     //获取store
     const store = collapseStore()
   
@@ -65,6 +70,10 @@
     //获取菜单状态
     const collapse = computed(()=>{
     return store.getCollapse
+    })
+    //获取菜单数据
+    const menuList=computed(()=>{
+        return ustore.getMenuList
     })
     </script>
     <style scoped lang="scss">

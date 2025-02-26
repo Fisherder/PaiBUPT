@@ -32,3 +32,9 @@ export type SaveAssignParm = {
     assId: string,
     list: Array<string>
 }
+//修改密码
+export type UpdateParm = {
+    password:string,
+    userId:string
+    oldPassword:string
+    }

@@ -1,6 +1,7 @@
 package com.itmk.web.sys_user.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
@@ -162,4 +163,24 @@ public class SysUserController {
         vo.setMenuList(menuVoList);
         return ResultUtils.success("登录成功",vo);
     }
+
+    //修改密码
+    @PutMapping("/updatePassword")
+    public ResultVo updatePassword(@RequestBody UpdatePasswordParm parm){
+//验证原密码是否正确
+        SysUser user = sysUserService.getById(parm.getUserId());
+//原密码加密
+        String oldPassword = DigestUtils.md5DigestAsHex(parm.getOldPassword().getBytes());
+        if(!user.getPassword().equals(oldPassword)){
+            return ResultUtils.error("原密码不正确!");
+        }
+        UpdateWrapper<SysUser> query = new UpdateWrapper<>();
+        query.lambda().set(SysUser::getPassword,DigestUtils.md5DigestAsHex(parm.getPassword().getBytes()))
+                .eq(SysUser::getUserId,parm.getUserId());
+        if(sysUserService.update(query)){
+            return ResultUtils.success("修改成功!");
+        }
+        return ResultUtils.error("修改失败！");
+    }
+
 }

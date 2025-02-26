@@ -79,7 +79,17 @@
 			value: '1',
 			name: '求购',
 			disabled: false
-		}
+		},
+		{
+			value: '2',
+			name: '拍卖',
+			disabled: false
+		},
+		{
+			value: '3',
+			name: '拼车',
+			disabled: false
+		},
 	]
 	//表单验证规则
 	const rules = reactive({

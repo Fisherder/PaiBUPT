@@ -1,5 +1,5 @@
 import http from "../../http";
-import type { ListParm, User,LoginParm, AssignParm, SaveAssignParm } from "./UserModel";
+import type { ListParm, User,LoginParm, AssignParm, SaveAssignParm, UpdateParm } from "./UserModel";
 
 //新增
 export const addAdminUserApi = (parm:User)=>{
@@ -32,4 +32,8 @@ export const getAssignTreeApi = (parm:AssignParm)=>{
 //保存分配的菜单
 export const assignSaveApi = (parm:SaveAssignParm)=>{
     return http.post("/api/menu/assignSave",parm)
+}
+//修改密码
+export const updatePasswordApi = (parm:UpdateParm)=>{
+    return http.put("/api/sysUser/updatePassword",parm)
 }

@@ -1,4 +1,5 @@
 import http from "../../http";
+//管理用户
 import type { WxUser, WxUserListParm } from "./WxUserModel";
 //查询列表
 export const getListApi=(parm:WxUserListParm)=>{

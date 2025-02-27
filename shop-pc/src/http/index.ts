@@ -3,8 +3,8 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse,
     //axios请求配置
     const config = {
     //baseURL: 'http://localhost:8089',
-    //baseURL: '/api',
-    baseURL:import.meta.env.VITE_BASE_API||'http://localhost:8089',
+    baseURL: '/api',
+    //baseURL:import.meta.env.VITE_BASE_API||'http://localhost:8089',
     timeout: 10000,
     withCredentials:true//解决session不一致
     

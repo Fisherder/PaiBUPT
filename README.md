@@ -41,11 +41,11 @@ npm run dev
 
 ## 技术架构
 本系统采用前后端分离架构：
-前端：Vue.js + ElementUI 构建渐进式Web应用
-后端：Spring Boot + MyBatis Plus 微服务架构
-数据库：MySQL 8.3 + Redis 6.0 缓存
-特色技术：Elasticsearch 商品检索 / 阿里云OSS对象存储 / Docker容器化部署（待实现）
-安全框架：JWT鉴权 + Spring Security权限控制（待实现）
+- 前端：Vue.js + ElementUI 构建渐进式Web应用
+- 后端：Spring Boot + MyBatis Plus 微服务架构
+- 数据库：MySQL 8.3 + Redis 6.0 缓存
+- 特色技术：Elasticsearch 商品检索 / 阿里云OSS对象存储 / Docker容器化部署（待实现）
+- 安全框架：JWT鉴权 + Spring Security权限控制（待实现）
 
 ## 未来展望
 项目仍处在开发初期阶段，欢迎开发者通过Issues参与项目贡献，共同打造更智能的校园交易生态！

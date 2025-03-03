@@ -35,7 +35,7 @@
 				<u-input v-model="addModel.address" />
 			</u-form-item>
 			<u-form-item prop="image" label="图片:"></u-form-item>
-			<u-upload @on-remove="onRemove" @on-change="onChange" :action="action"></u-upload>
+			<u-upload ref="imgRef" @on-remove="onRemove" @on-change="onChange" :action="action"></u-upload>
 		</u-form>
 		<u-button @click="commit" :custom-style="customStyle">发布</u-button>
 	</view>
@@ -55,6 +55,7 @@
 	} from '../../api/goods.js'
 	//表单ref属性，form1与上面的ref相绑定，通过prop实现验证
 	const form1 = ref()
+	const imgRef=ref()
 	const addModel = reactive({
 		userId: uni.getStorageSync('userId'),
 		name: '',
@@ -79,17 +80,17 @@
 			value: '1',
 			name: '求购',
 			disabled: false
-		},
-		{
-			value: '2',
-			name: '拍卖',
-			disabled: false
-		},
-		{
-			value: '3',
-			name: '拼车',
-			disabled: false
-		},
+		}
+		// {
+		// 	value: '2',
+		// 	name: '拍卖',
+		// 	disabled: false
+		// }
+		// {
+		// 	value: '3',
+		// 	name: '拼车',
+		// 	disabled: false
+		// },
 	]
 	//表单验证规则
 	const rules = reactive({
@@ -205,6 +206,21 @@
 				let res=await releaseApi(addModel)
 				if(res && res.code==200){
 					console.log(res)
+					if(addModel.type=='0'){
+						uni.switchTab({
+								url:'../unused/unused'
+						})
+					}else{
+						uni.switchTab({
+							url:'../buy/buy'
+						})
+					}
+					//清空数据
+					form1.value.resetFields()
+					imgUrl.value=[]
+					addModel.image='';
+					fileList.value=[]
+					imgRef.value.clear()
 				}
 			}
 		})

@@ -8,11 +8,13 @@ import com.itmk.utils.ResultVo;
 import com.itmk.web.goods.entity.Goods;
 import com.itmk.web.goods.entity.GoodsListParm;
 import com.itmk.web.goods.entity.UpandDownParm;
+import com.itmk.web.goods.entity.WxIndexParm;
 import com.itmk.web.goods.service.GoodsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/goods")
@@ -77,5 +79,55 @@ public class GoodsController {
             return ResultUtils.success("删除成功!");
         }
         return ResultUtils.error("删除失败!");
+    }
+    //小程序首页列表查询
+    @GetMapping("/getIndexList")
+    public ResultVo getIndexList(WxIndexParm parm){
+        //构造查询条件
+        QueryWrapper<Goods> query = new QueryWrapper<>();
+        query.lambda().like(StringUtils.isNotEmpty(parm.getKeywords()),Goods::getGoodsName,parm.getKeywords())
+                .eq(Goods::getDeleteStatus,"0")
+                .eq(Goods::getStatus,"0")
+                .eq(Goods::getSellStatus,"0")
+                .eq(Goods::getSetIndex,"1")
+                .orderByDesc(Goods::getCreateTime);
+        //构造分页对象
+        IPage<Goods> page=new Page<>(parm.getCurrentPage(),parm.getPageSize());
+        IPage<Goods> list = goodsService.page(page, query);
+        return ResultUtils.success("查询成功",list);
+    }
+    //小程序闲置列表查询
+    @GetMapping("/getUsedList")
+    public ResultVo getUsedList(WxIndexParm parm){
+        //构造查询条件
+        QueryWrapper<Goods> query = new QueryWrapper<>();
+        query.lambda().like(StringUtils.isNotEmpty(parm.getKeywords()),Goods::getGoodsName,parm.getKeywords())
+                .eq(Goods::getDeleteStatus,"0")
+                .eq(Goods::getStatus,"0")
+                .eq(Goods::getSellStatus,"0")
+                .eq(Goods::getType,"0")
+                .eq(StringUtils.isNotEmpty(parm.getCategoryId()),Goods::getCategoryId,parm.getCategoryId())
+                .orderByDesc(Goods::getCreateTime);
+        //构造分页对象
+        IPage<Goods> page=new Page<>(parm.getCurrentPage(),parm.getPageSize());
+        IPage<Goods> list = goodsService.page(page, query);
+        return ResultUtils.success("查询成功",list);
+    }
+    //小程序求购列表查询
+    @GetMapping("/getBuyList")
+    public ResultVo getBuyList(WxIndexParm parm){
+        //构造查询条件
+        QueryWrapper<Goods> query = new QueryWrapper<>();
+        query.lambda().like(StringUtils.isNotEmpty(parm.getKeywords()),Goods::getGoodsName,parm.getKeywords())
+                .eq(Goods::getDeleteStatus,"0")
+                .eq(Goods::getStatus,"0")
+                .eq(Goods::getSellStatus,"0")
+                .eq(Goods::getType,"1")
+                .eq(StringUtils.isNotEmpty(parm.getCategoryId()),Goods::getCategoryId,parm.getCategoryId())
+                .orderByDesc(Goods::getCreateTime);
+        //构造分页对象
+        IPage<Goods> page=new Page<>(parm.getCurrentPage(),parm.getPageSize());
+        IPage<Goods> list = goodsService.page(page, query);
+        return ResultUtils.success("查询成功",list);
     }
 }

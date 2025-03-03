@@ -94,5 +94,14 @@ public class SysBannerController {
         }
         return ResultUtils.error("设置失败！");
     }
+    //查询小程序首页轮播图数据
+    @GetMapping("/getIndexBanner")
+    public ResultVo getIndexBanner(){
+        QueryWrapper<SysBanner> query=new QueryWrapper<>();
+        query.lambda().eq(SysBanner::getStatus,"0")
+            .orderByAsc(SysBanner::getOrderNum);
+        List<SysBanner> list=sysBannerService.list(query);
+        return ResultUtils.success("查询成功",list);
+    }
 
 }

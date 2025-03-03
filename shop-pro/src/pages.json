@@ -43,6 +43,20 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
+		},
+		{
+			"path" : "pages/unused_detail/unused_detail",
+			"style" : 
+			{
+				"navigationBarTitleText" : "闲置详情"
+			}
+		},
+		{
+			"path" : "pages/buy_detail/buy_detail",
+			"style" : 
+			{
+				"navigationBarTitleText" : "求购详情"
+			}
 		}
 		
 	],

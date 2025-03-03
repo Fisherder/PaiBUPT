@@ -1,128 +1,185 @@
 <template>
 	<view class="u-wrap">
-		<u-search margin="20rpx 0rpx":show-action="true" action-text="搜索" :animation="true"></u-search>
-	</view>
-	<view class="tab-strickt">
-		 <u-tabs active-color="#FF7670" name="cate_name" count="cate_count" :list="tabList" :is-scroll="true" v-model="current" @change="change"></u-tabs>
-	</view>
-	<view class="">
-		<u-waterfall v-model="flowList" ref="uWaterfall1">
-			<template v-slot:left="{leftList}">
-				<view class="demo-warter-left" v-for="(item, index) in leftList" :key="index">
-					<!-- 警告：微信小程序中需要hx2.8.11版本才支持在template中结合其他组件，比如下方的lazy-load组件 -->
-					<u-lazy-load threshold="-450" border-radius="10" :image="item.image"
-						:index="index"></u-lazy-load>
-					<view class="demo-title">
-						{{item.title}}
-					</view>
-					<view class="demo-price">
-						{{item.price}}元
-					</view>
-					<view class="demo-tag">
-						<view class="demo-tag-owner">
-							自营
+		<!-- 搜索框 -->
+		<u-search @change="searchList" v-model="keywords" margin="20rpx 0rpx" :show-action="true" action-text="搜索" :animation="true"></u-search>
+		<view class="tab-strickt">
+			<u-tabs active-color="#FF7670" name="categoryName" count="cate_count" :list="tabList" :is-scroll="true"
+				v-model="current" @change="change"></u-tabs>
+		</view>
+		<!-- 瀑布流列表 -->
+		<view class="">
+			<u-waterfall v-model="flowList" ref="uWaterfall1">
+				<template v-slot:left="{leftList}">
+					<view class="demo-warter" v-for="(item, index) in leftList" :key="index">
+						<!-- 警告：微信小程序中需要hx2.8.11版本才支持在template中结合其
+他组件，比如下方的lazy-load组件 -->
+						<u-lazy-load @click="toDetail(item)" threshold="-450" border-radius="10" :image="item.image" :index="index">
+						</u-lazy-load>
+						<view class="demo-title">
+							{{item.goodsName}}
 						</view>
-						<view class="demo-tag-text">
-							放心购
+						<view class="demo-price">
+							{{item.goodsPrice}}元
 						</view>
-					</view>
-					<view class="demo-shop">
-						{{item.shop}}
-					</view>
-					<u-icon name="close-circle-fill" color="#fa3534" size="34" class="u-close"
-						@click="remove(item.id)"></u-icon>
-				</view>
-			</template>
-			<template v-slot:right="{rightList}">
-				<view class="demo-warter-right" v-for="(item, index) in rightList" :key="index">
-					<u-lazy-load threshold="-450" border-radius="10" :image="item.image"
-						:index="index"></u-lazy-load>
-					<view class="demo-title">
-						{{item.title}}
-					</view>
-					<view class="demo-price">
-						{{item.price}}元
-					</view>
-					<view class="demo-tag">
-						<view class="demo-tag-owner">
-							自营
-						</view>
-						<view class="demo-tag-text">
-							放心购
+						<view class="demo-tag">
+							<view v-if="item.type == '0'" class="demo-tag-owner">
+								闲置
+							</view>
+							<view style="margin-left: 0;" v-else class="demo-tag-text">
+								求购
+							</view>
 						</view>
 					</view>
-					<view class="demo-shop">
-						{{item.shop}}
+				</template>
+				<template v-slot:right="{rightList}">
+					<view class="demo-warter" v-for="(item, index) in rightList" :key="index">
+						<u-lazy-load @click="toDetail(item)" threshold="-450" border-radius="10" :image="item.image" :index="index">
+						</u-lazy-load>
+						<view class="demo-title">
+							{{item.goodsName}}
+						</view>
+						<view class="demo-price">
+							{{item.goodsPrice}}元
+						</view>
+						<view class="demo-tag">
+							<view v-if="item.type == '0'" class="demo-tag-owner">
+								闲置
+							</view>
+							<view style="margin-left: 0;" v-else class="demo-tag-text">
+								求购
+							</view>
+						</view>
 					</view>
-					<u-icon name="close-circle-fill" color="#fa3534" size="34" class="u-close"
-						@click="remove(item.id)"></u-icon>
-				</view>
-			</template>
-		</u-waterfall>
-		<u-loadmore bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
+				</template>
+			</u-waterfall>
+		</view>
+		<u-loadmore bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="loadMore"></u-loadmore>
 	</view>
 </template>
-
 <script setup>
-import { ref } from 'vue';
+	import {
+		onReady,onReachBottom
+	} from '@dcloudio/uni-app';
+	import {
+		ref
+	} from 'vue';
+	import {
+		getCateListApi,getUsedListApi
+	} from '../../api/goods.js'
+	const tabList = ref([])
+	const current = ref(0)
+	const uWaterfall1=ref()
+	const loadStatus = ref('loadmore')
+	//瀑布流
+	const flowList = ref([])
+	//获取分类数据
+	const getCateList = async () => {
+		let res = await getCateListApi()
+		if (res && res.code == 200) {
+			console.log(res)
+			tabList.value = res.data;
+			//分类数据的第一位添加全部
+			tabList.value.unshift({
+				categoryId: '',
+				categoryName: '全部',
+				orderNum: 0
+			})
+		}
+	}
+	//分类点击事件
+	const categoryId = ref('')
+	const change = (e) => {
+		categoryId.value = tabList.value[e].categoryId
+		console.log(categoryId.value)
+		//清空列表数据
+		currentPage.value = 1;
+		//清空瀑布流的数据
+		uWaterfall1.value.clear()
+		//调用列表
+		getUsedList()
 
-	const tabList=ref([
-		{
-			cate_name:'全部'
-		},
-		{
-			cate_name:'手机'
-		},
-		{
-			cate_name:'电脑'
-		},
-		{
-			cate_name:'衣服'
-		},
-		{
-			cate_name:'鞋子'
-		},
-		{
-			cate_name:'图书'
-		},
-		{
-			cate_name:'时尚'
-		},
-		{
-			cate_name:'手作'
-		},
-	])
-	const current=ref(0)
-	const flowList = ref([{
-			price: 7500,
-			title: "笔记本电脑",
-			image: '/static/11.jpeg',
-		},
-		{
-			price: 3000,
-			title: "手机",
-			image: '/static/22.jpg',
-		},
-		{
-			price: 7500,
-			title: "电脑",
-			image: '/static/55.jpeg',
-		},
-	])
+	}
+	//获取闲置列表数据
+	const currentPage=ref(1)
+	const pageSize=ref(10)
+	const keywords=ref('')
+	const pages=ref(0)
+	const getUsedList=async()=>{
+		let res=await getUsedListApi({
+			currentPage:currentPage.value,
+			pageSize:pageSize.value,
+			categoryId:categoryId.value,
+			keywords:keywords.value
+		})
+		if(res && res.code==200){
+			console.log(res)
+			flowList.value=flowList.value.concat(res.data.records)
+			pages.value=res.data.pages
+		}
+	}
+	//加载更多
+	const loadMore = () => {
+		console.log('点击加载更多')
+		// 如果当前页数大于等于总页数，状态修改为没有更多了，不再继续往下执行代码
+		if (currentPage.value >= pages.value) {
+			loadStatus.value = 'nomore';
+			return;
+		};
+		loadStatus.value = 'loading'; //状态改为加载中
+		currentPage.value = ++currentPage.value
+		//修改页数后，重新获取数据
+		getUsedList()
+	}
+	//触底加载
+	onReachBottom(() => {
+		console.log('触底加载更多')
+		// 如果当前页数大于等于总页数，状态修改为没有更多了，不再继续往下执行代码
+		if (currentPage.value >= pages.value) {
+			loadStatus.value = 'nomore';
+			return;
+		};
+		loadStatus.value = 'loading'; //状态改为加载中
+		currentPage.value = ++currentPage.value
+		//修改页数后，重新获取数据
+		getUsedList()
+	})
+	//搜索
+	const searchList = () => {
+		uWaterfall1.value.clear()
+		currentPage.value = 1;
+		loadStatus.value = 'loading';
+		getUsedList()
+	}
+	//跳转详情页
+	const toDetail=(item)=>{
+			
+		if(item.type=='0'){
+			uni.navigateTo({
+				url:"../unused_detail/unused_detail?goods="+JSON.stringify(item)
+			})
+		}
+		else{
+			uni.navigateTo({
+				url:"../buy_detail/buy_detail?goods="+JSON.stringify(item)
+			})
+		}
+	}
+	onReady(() => {
+		getCateList()
+		getUsedList()
+	})
 </script>
-
 <style lang="scss">
-	.demo-warter-left {
-		border-radius: 8px;
-		margin: 5px 0px 5px 5px;
-		background-color: #ffffff;
-		padding: 8px;
-		position: relative;
+	.tab-strickt {
+		position: sticky;
+		z-index: 99;
+		top: 0;
+		left: 0;
 	}
 
-	.demo-warter-right {
+	.demo-warter {
 		border-radius: 8px;
-		margin: 5px 5px 5px 0px;
+		margin: 5px;
 		background-color: #ffffff;
 		padding: 8px;
 		position: relative;
@@ -186,19 +243,22 @@ import { ref } from 'vue';
 		margin-top: 5px;
 	}
 
-	.tab-strickt {
+	.tab-sticky {
 		position: sticky;
 		z-index: 99;
 		top: 0;
 		left: 0;
+		background-color: #f2f2f2;
 		display: flex;
 		align-items: center;
-		background-color: #f2f2f2;
 	}
+
 	/*去掉tabs选项卡滚动条*/
 	scroll-view ::v-deep ::-webkit-scrollbar {
-	width: 0;
-	height: 0;
-	color: transparent
+		width: 0;
+		height: 0;
+		color: transparent
 	}
+
+	
 </style>

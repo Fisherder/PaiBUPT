@@ -39,7 +39,7 @@ import { ElMessage, type FormInstance } from 'element-plus';
 import { updatePasswordApi } from '../api/user';
 import { userStore } from '../store/user';
 const store = userStore()
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose,  onShow } = useDialog();
 //表单ref属性
 const form = ref<FormInstance>()
 const router = useRouter();

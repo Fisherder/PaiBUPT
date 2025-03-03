@@ -80,4 +80,10 @@ public class GoodsCategoryController {
                 });
         return ResultUtils.success("查询成功", selectList);
     }
+    //小程序分类接口
+    @GetMapping("/getCateList")
+    public ResultVo getCateList() {
+        List<GoodsCategory> list = goodsCategoryService.list();
+        return ResultUtils.success("查询成功",list);
+    }
 }

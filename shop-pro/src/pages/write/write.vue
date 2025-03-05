@@ -80,7 +80,7 @@
 			value: '1',
 			name: '求购',
 			disabled: false
-		}
+		},
 		// {
 		// 	value: '2',
 		// 	name: '拍卖',

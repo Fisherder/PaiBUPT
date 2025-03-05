@@ -58,7 +58,7 @@
 </template>
 <script setup>
 	import {
-		onReady,onReachBottom
+		onReady,onReachBottom,onLoad, onShow,
 	} from '@dcloudio/uni-app';
 	import {
 		ref
@@ -164,10 +164,22 @@
 			})
 		}
 	}
+	
 	onReady(() => {
 		getCateList()
 		getUsedList()
 	})
+	// onLoad(async () => {
+	//   await getCateList(); // 确保分类数据加载完成
+	//   getUsedList();       // 初次加载商品列表
+	// });
+	// 在 onShow 中处理页面重新进入时的刷新
+	onShow(() => {
+	  currentPage.value = 1;       // 重置为第一页
+	  uWaterfall1.value.clear();   // 清空瀑布流数据
+	  loadStatus.value = 'loading';// 设置加载状态
+	  getUsedList();               // 重新加载最新数据
+	});
 </script>
 <style lang="scss">
 	.tab-strickt {

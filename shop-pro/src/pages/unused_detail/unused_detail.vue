@@ -103,17 +103,56 @@
 			</view>
 			<view class="right">
 				<view @click="callPhone" class="cart btn u-line-1">电话咨询</view>
-				<view class="buy btn u-line-1">立即交易</view>
+				<view @click="toBuy" class="buy btn u-line-1">拍卖出价</view>
 			</view>
 		</view>
+		<!-- 拍卖出价 -->
+		<u-popup :mask-close-able="false" border-radius="15" width="85%" height="200px" v-model="show" mode="center">
+			<view style="padding:50px 15px 30px 15px;">
+				<u-form label-width="auto" :model="addModel" ref="form1">
+					<u-form-item label="先前报价">
+						<view>
+							{{goodsPrice}}
+						</view>
+					</u-form-item>
+					<u-form-item label="截止时间">
+						<view>
+							{{deadline}}
+						</view>
+					</u-form-item>
+					<u-form-item label="当前出价最高者">
+						<view>
+							{{maxUser}}
+						</view>
+					</u-form-item>
+					<u-form-item label="请输入出价" prop="price"><u-input v-model="addModel.price" />
+					</u-form-item>
+				</u-form>
+			</view>
+			<view class="conBtn">
+				<u-button @click="cancel" style="margin-right: 15px;" type="info">取消交易</u-button>
+				<u-button @click="confirm" style="margin-left: 15px;" :custom-style="customStyle"
+					type="error">确定交易</u-button>
+			</view>
+		</u-popup>
 	</view>
 </template>
 
 <script setup>
-	import { onLoad } from '@dcloudio/uni-app';
-import {
-		ref
+	import {
+		onLoad
+	} from '@dcloudio/uni-app';
+	import {
+		ref,
+		reactive,
+		computed
 	} from 'vue';
+	import {
+		replaceOrderApi,getGoodsDetailApi
+	} from '../../api/order';
+	const customStyle = reactive({
+		background: '#FF7670'
+	})
 	//轮播图高度
 	const height = ref('350')
 	//是否显示面板指示点
@@ -146,42 +185,154 @@ import {
 	const phone = ref('')
 	//发布时间
 	const createTime = ref('')
-	const goodsId=ref('')
+	// 计算属性：createTime + 48 小时
+	const deadline = computed(() => {
+		if (!createTime.value) return '';
+
+		// 将 createTime 转换为 Date 对象
+		const originTime = new Date(createTime.value);
+
+		// 添加 48 小时（48 * 60 * 60 * 1000 毫秒）
+		const newTime = new Date(originTime.getTime() + 48 * 60 * 60 * 1000);
+
+		// 格式化时间（示例格式：YYYY-MM-DD HH:mm:ss）
+		// 使用 uView 的日期格式化工具（需确保已配置）
+		return uni.$u.date(newTime, 'yyyy-mm-dd hh:MM:ss');
+	});
+	const goodsId = ref('')
 	//跳转首页
-	const toHome=()=>{
+	const toHome = () => {
 		uni.switchTab({
-			url:"../index/index"
+			url: "../index/index"
 		})
 	}
 	//电话咨询
-	const callPhone=()=>{
+	const callPhone = () => {
 		uni.makePhoneCall({
-			phoneNumber:phone.value,
-			success:(res)=>{},
-			fail:(res)=>{
-				
+			phoneNumber: phone.value,
+			success: (res) => {},
+			fail: (res) => {
+
 			}
 		})
 	}
-	onLoad((options)=>{
+	//商品创建人ID
+	const creatUser = ref('')
+	//当前出价最高者
+	const maxUser = ref('')
+	//拍卖出价
+	const show = ref(false)
+	const toBuy = () => {
+		show.value = true;
+	}
+	const addModel = reactive({
+		price: "",
+		goodsId: "",
+		orderUser: uni.getStorageSync("userId"),
+	})
+	//交易取消
+	const cancel = () => {
+		show.value = false;
+	}
+	//交易确定
+	const confirm = async () => {
+		//是否填写金额
+		if (!addModel.price) {
+			uni.showToast({
+				title: '请填写金额',
+				icon: "none",
+				mask: true,
+				duration: 3000
+			})
+			return
+		}
+		//不能自己交易自己的物品
+		if (creatUser.value == addModel.orderUser) {
+			uni.showToast({
+				title: '不能自己交易自己的物品',
+				icon: "none",
+				mask: true,
+				duration: 3000
+			})
+			return
+		}
+		// //出价不能小于上次报价
+		// if (addModel.price < goodsPrice.value) {
+		// 	uni.showToast({
+		// 		title: '出价要高于上次报价',
+		// 		icon: "none",
+		// 		mask: true,
+		// 		duration: 3000
+		// 	})
+		// 	return
+		// }
+		//不能拍卖过了deadline的物品
+		// const currentTime = new Date().getTime();
+		// const deadlineTime = new Date(deadline.value).getTime();
+		// if (currentTime > deadlineTime) {
+		// 	uni.showToast({
+		// 		title: '不能拍卖过了截止日期的商品',
+		// 		icon: "none",
+		// 		mask: true,
+		// 		duration: 3000
+		// 	})
+		// 	return
+		// }
+		let res = await replaceOrderApi(addModel)
+		if (res && res.code == 200) {
+			// 重新获取商品详情数据
+			let goodsRes = await getGoodsDetailApi(addModel);
+			if (goodsRes&&goodsRes.code === 200) {
+				let updatedGoods = goodsRes.data;
+				// 更新所有相关响应式变量
+				maxUser.value = updatedGoods.ownName;
+				goodsPrice.value = updatedGoods.goodsPrice;
+				uni.showToast({
+					title: '交易成功',
+					icon: "success",
+					mask: true,
+					duration: 3000
+				});
+				show.value = false;
+				
+			}
+			// maxUser.value = uni.getStorageSync("username");
+			// goodsPrice.value = addModel.price;
+			// 提示用户交易成功
+			
+			// // 强制刷新（如果需要）
+			// await nextTick();
+		}
+
+	}
+	onLoad((options) => {
 		const goods = JSON.parse(options.goods)
 		console.log(goods)
 		goodsId.value = goods.goodsId;
+		addModel.goodsId = goods.goodsId;
+		creatUser.value = goods.userId;
 		//物品图片：轮播图数据
 		if (goods.image) {
-		swipperList.value = goods.image.split(",");
+			swipperList.value = goods.image.split(",");
 		}
 		goodsName.value = goods.goodsName;
 		goodsDesc.value = goods.goodsDesc;
 		address.value = goods.address;
-		goodsPrice.value = goods.goodsPrice
-		createTime.value = goods.createTime
-		phone.value = goods.phone
-		wxNum.value = goods.wxNum
+		goodsPrice.value = goods.goodsPrice;
+		createTime.value = goods.createTime;
+		phone.value = goods.phone;
+		wxNum.value = goods.wxNum;
+		maxUser.value = goods.ownName;
 	})
 </script>
 
 <style lang="scss">
+	.conBtn {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
 	.header {
 		display: flex;
 	}

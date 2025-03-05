@@ -16,6 +16,8 @@ public class Goods {
     private Long goodsId;
     //发布人id
     private Long userId;
+    //拍下者的id
+    private Long ownId;
     //订单id
 //    @TableField(exist = false)
 //    private Long orderId;
@@ -34,6 +36,8 @@ public class Goods {
 //    private BigDecimal price;
     //姓名
     private String userName;
+    //拍下者名字
+    private String ownName;
     //电话
     private String phone;
     //发布/求购地址

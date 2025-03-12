@@ -92,14 +92,17 @@
 					<u-icon name="home" :size="40"></u-icon>
 					<view class="text u-line-1">首页</view>
 				</view>
-				<view class="item">
-					<u-icon :size="40" name="star"></u-icon>
-					<view class="text u-line-1">收藏</view>
+				<view @click="collectBtn" class="item">
+					<u-icon v-if="hasStatus == '0'" :size="40" name="star"></u-icon>
+					<u-icon v-if="hasStatus == '1'" color="#FF7670" :size="40" name="star"></u-icon>
+					<view v-if="hasStatus == '0'" class="text u-line-1">收藏
+					</view>
+					<view v-if="hasStatus == '1'" style="color:#FF7670" class="text u-line-1">收藏</view>
 				</view>
-				<view class="item car">
+				<!-- <view class="item car">
 					<u-icon name="info-circle" :size="40"></u-icon>
 					<view class="text u-line-1">举报</view>
-				</view>
+				</view> -->
 			</view>
 			<view class="right">
 				<view @click="callPhone" class="cart btn u-line-1">电话咨询</view>
@@ -148,8 +151,13 @@
 		computed
 	} from 'vue';
 	import {
-		replaceOrderApi,getGoodsDetailApi
+		replaceOrderApi,
+		getGoodsDetailApi
 	} from '../../api/order';
+	import {
+		collectApi,
+		hasCollectApi
+	} from '../../api/unused';
 	const customStyle = reactive({
 		background: '#FF7670'
 	})
@@ -205,6 +213,30 @@
 		uni.switchTab({
 			url: "../index/index"
 		})
+	}
+	//收藏按钮
+	const collectBtn = async () => {
+
+		let res = await collectApi({
+			userId: uni.getStorageSync("userId"),
+			goodsId: goodsId.value
+		})
+		if (res && res.code == 200) {
+			console.log(res)
+			hasCollect()
+		}
+	}
+	const hasStatus = ref('0')
+	//查询是否收藏
+	const hasCollect = async () => {
+		let res = await hasCollectApi({
+			userId: uni.getStorageSync("userId"),
+			goodsId: goodsId.value
+		})
+		if (res && res.code == 200) {
+			console.log(res)
+			hasStatus.value = res.data
+		}
 	}
 	//电话咨询
 	const callPhone = () => {
@@ -282,7 +314,7 @@
 		if (res && res.code == 200) {
 			// 重新获取商品详情数据
 			let goodsRes = await getGoodsDetailApi(addModel);
-			if (goodsRes&&goodsRes.code === 200) {
+			if (goodsRes && goodsRes.code === 200) {
 				let updatedGoods = goodsRes.data;
 				// 更新所有相关响应式变量
 				maxUser.value = updatedGoods.ownName;
@@ -294,12 +326,12 @@
 					duration: 3000
 				});
 				show.value = false;
-				
+
 			}
 			// maxUser.value = uni.getStorageSync("username");
 			// goodsPrice.value = addModel.price;
 			// 提示用户交易成功
-			
+
 			// // 强制刷新（如果需要）
 			// await nextTick();
 		}
@@ -323,6 +355,8 @@
 		phone.value = goods.phone;
 		wxNum.value = goods.wxNum;
 		maxUser.value = goods.ownName;
+		//查询是否收藏
+		hasCollect()
 	})
 </script>
 

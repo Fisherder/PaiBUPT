@@ -92,14 +92,17 @@
 					<u-icon name="home" :size="40"></u-icon>
 					<view class="text u-line-1">首页</view>
 				</view>
-				<view class="item">
-					<u-icon :size="40" name="star"></u-icon>
-					<view class="text u-line-1">收藏</view>
+				<view @click="collectBtn" class="item">
+					<u-icon v-if="hasStatus == '0'" :size="40" name="star"></u-icon>
+					<u-icon v-if="hasStatus == '1'" color="#FF7670" :size="40" name="star"></u-icon>
+					<view v-if="hasStatus == '0'" class="text u-line-1">收藏
+					</view>
+					<view v-if="hasStatus == '1'" style="color:#FF7670" class="text u-line-1">收藏</view>
 				</view>
-				<view class="item car">
+				<!-- <view class="item car">
 					<u-icon name="info-circle" :size="40"></u-icon>
 					<view class="text u-line-1">举报</view>
-				</view>
+				</view> -->
 			</view>
 			<view class="right">
 				<view @click="callPhone" class="cart btn u-line-1">电话咨询</view>
@@ -109,10 +112,13 @@
 </template>
 
 <script setup>
-	import { onLoad } from '@dcloudio/uni-app';
-import {
+	import {
+		onLoad
+	} from '@dcloudio/uni-app';
+	import {
 		ref
 	} from 'vue';
+	import { collectApi,hasCollectApi } from '../../api/unused';
 	//轮播图高度
 	const height = ref('350')
 	//是否显示面板指示点
@@ -145,30 +151,54 @@ import {
 	const phone = ref('')
 	//发布时间
 	const createTime = ref('')
-	const goodsId=ref('')
+	const goodsId = ref('')
 	//跳转首页
-	const toHome=()=>{
+	const toHome = () => {
 		uni.switchTab({
-			url:"../index/index"
+			url: "../index/index"
 		})
 	}
 	//电话咨询
-	const callPhone=()=>{
+	const callPhone = () => {
 		uni.makePhoneCall({
-			phoneNumber:phone.value,
-			success:(res)=>{},
-			fail:(res)=>{
-				
+			phoneNumber: phone.value,
+			success: (res) => {},
+			fail: (res) => {
+
 			}
 		})
 	}
-	onLoad((options)=>{
+	const hasStatus = ref('0')
+	//查询是否收藏
+	const hasCollect = async () => {
+		let res = await hasCollectApi({
+			userId: uni.getStorageSync("userId"),
+			goodsId: goodsId.value
+		})
+		if (res && res.code == 200) {
+			console.log(res)
+			hasStatus.value = res.data
+		}
+	}
+	//收藏按钮
+	const collectBtn = async () => {
+
+		let res = await collectApi({
+			userId: uni.getStorageSync("userId"),
+			goodsId: goodsId.value
+		})
+		if (res && res.code == 200) {
+			console.log(res)
+			hasCollect()
+		}
+	}
+	onLoad((options) => {
 		const goods = JSON.parse(options.goods)
 		console.log(goods)
 		goodsId.value = goods.goodsId;
 		//物品图片：轮播图数据
 		if (goods.image) {
-		swipperList.value = goods.image.split(",");
+			swipperList.value = goods.image.split(",");
 		}
 		goodsName.value = goods.goodsName;
 		goodsDesc.value = goods.goodsDesc;
@@ -177,6 +207,8 @@ import {
 		createTime.value = goods.createTime
 		phone.value = goods.phone
 		wxNum.value = goods.wxNum
+		//查询是否收藏
+		hasCollect()
 	})
 </script>
 

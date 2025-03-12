@@ -37,6 +37,8 @@
 			<u-form-item prop="image" label="图片:"></u-form-item>
 			<u-upload ref="imgRef" @on-remove="onRemove" @on-change="onChange" :action="action"></u-upload>
 		</u-form>
+		<u-button @click="ask" :custom-style="customStyle">咨询起价建议</u-button>
+		
 		<u-button @click="commit" :custom-style="customStyle">发布</u-button>
 	</view>
 </template>
@@ -196,6 +198,10 @@
 		console.log(e)
 		addModel.categoryName = e[0].label;
 		addModel.categoryId = e[0].value;
+	}
+	//咨询
+	const ask=()=>{
+		
 	}
 	//发布提交
 	const commit = () => {

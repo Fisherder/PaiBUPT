@@ -1,12 +1,5 @@
 <template>
 	<view>
-		<!-- <u-navbar :is-back="false" title="　" :border-bottom="false">
-			<view class="u-flex u-row-right" style="width: 100%;">
-				<view class="camera u-flex u-row-center">
-					<u-icon name="camera-fill" color="#000000" size="48"></u-icon>
-				</view>
-			</view>
-		</u-navbar> -->
 		<view class="u-flex user-box u-p-30">
 			<view class="u-m-r-10">
 				<u-avatar :src=pic size="100"></u-avatar>
@@ -20,7 +13,7 @@
 		</view>
 		<view class="u-m-t-20">
 			<u-cell-group>
-				<u-cell-item icon="star" title="我的发布"></u-cell-item>
+				<u-cell-item icon="star" title="我的闲置"></u-cell-item>
 				<u-cell-item icon="photo" title="我的求购"></u-cell-item>
 				<u-cell-item icon="heart" title="我的收藏"></u-cell-item>
 				<u-cell-item icon="red-packet" title="我的订单"></u-cell-item>
@@ -31,7 +24,7 @@
 		
 		<view class="u-m-t-20">
 			<u-cell-group>
-				<u-cell-item icon="setting" title="退出账号"></u-cell-item>
+				<u-cell-item @click="loginOut" icon="setting" title="退出账号"></u-cell-item>
 			</u-cell-group>
 		</view>
 	</view>
@@ -42,6 +35,13 @@
 	const pic=ref('/static/user.jpg')
 	const show=ref(true)
 	
+	//退出登录
+	const loginOut=()=>{
+		uni.clearStorageSync()
+		uni.navigateTo({
+			url:"../login/login"
+		})
+	}
 </script>
 
 <style lang="scss">

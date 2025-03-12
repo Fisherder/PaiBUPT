@@ -57,6 +57,48 @@
 			{
 				"navigationBarTitleText" : "求购详情"
 			}
+		},
+		{
+			"path" : "pages/my_unused/my_unused",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/my_buy/my_buy",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/my_collect/my_collect",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/my_order/my_order",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/sell_order/sell_order",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/update_password/update_password",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
 		}
 		
 		

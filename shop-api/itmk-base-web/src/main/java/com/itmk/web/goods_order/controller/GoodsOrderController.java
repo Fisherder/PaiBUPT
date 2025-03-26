@@ -1,9 +1,11 @@
 package com.itmk.web.goods_order.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.itmk.utils.ResultUtils;
 import com.itmk.utils.ResultVo;
 import com.itmk.web.goods.entity.Goods;
+import com.itmk.web.goods.entity.MyGoodsParm;
 import com.itmk.web.goods.service.GoodsService;
 import com.itmk.web.goods_order.entity.GoodsOrder;
 import com.itmk.web.goods_order.service.GoodsOrderService;
@@ -48,5 +50,17 @@ public class GoodsOrderController {
         Goods goods = goodsService.getOne(query); // 获取 Goods 记录
         return ResultUtils.success("查询成功!", goods);
 
+    }
+    //小程序我的订单
+    @GetMapping("/getMyOrder")
+    public ResultVo getMyOrder(MyGoodsParm parm){
+        IPage<Goods> list = goodsService.getMyOrder(parm);
+        return ResultUtils.success("查询成功！",list);
+    }
+    //我的出售订单
+    @GetMapping("/getSellOrder")
+    public ResultVo getSellOrder(MyGoodsParm parm){
+        IPage<Goods> list = goodsService.getSellOrder(parm);
+        return ResultUtils.success("查询成功！",list);
     }
 }

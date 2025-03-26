@@ -326,7 +326,9 @@
 					duration: 3000
 				});
 				show.value = false;
-
+				// uni.navigateTo({
+				// 	url:"../my_order/my_order"
+				// })
 			}
 			// maxUser.value = uni.getStorageSync("username");
 			// goodsPrice.value = addModel.price;

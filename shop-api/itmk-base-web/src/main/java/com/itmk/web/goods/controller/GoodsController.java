@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itmk.utils.ResultUtils;
 import com.itmk.utils.ResultVo;
-import com.itmk.web.goods.entity.Goods;
-import com.itmk.web.goods.entity.GoodsListParm;
-import com.itmk.web.goods.entity.UpandDownParm;
-import com.itmk.web.goods.entity.WxIndexParm;
+import com.itmk.web.goods.entity.*;
 import com.itmk.web.goods.service.GoodsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,5 +126,27 @@ public class GoodsController {
         IPage<Goods> page=new Page<>(parm.getCurrentPage(),parm.getPageSize());
         IPage<Goods> list = goodsService.page(page, query);
         return ResultUtils.success("查询成功",list);
+    }
+    //小程序发布我的闲置
+    @GetMapping("/getMyUnusedList")
+    public ResultVo getMyUnusedList(MyGoodsParm parm){
+            //构造查询条件
+        QueryWrapper<Goods> query = new QueryWrapper<>();
+        query.lambda().eq(Goods::getUserId,parm.getUserId())
+                .eq(Goods::getType,parm.getType())
+                .eq(Goods::getDeleteStatus,"0");
+        //构造分页对象
+        IPage<Goods> page=new Page<>(parm.getCurrentPage(),parm.getPageSize());
+        IPage<Goods> list = goodsService.page(page, query);
+        return ResultUtils.success("查询成功",list);
+    }
+
+    //编辑
+    @PostMapping("/edit")
+    public ResultVo edit(@RequestBody Goods goods){
+        if(goodsService.updateById(goods)){
+            return ResultUtils.success("编辑成功");
+        }
+        return ResultUtils.error("编辑失败");
     }
 }

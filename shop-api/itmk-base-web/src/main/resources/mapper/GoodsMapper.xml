@@ -2,4 +2,55 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.itmk.web.goods.mapper.GoodsMapper">
+
+    <!-- 查询买家订单（仅获取发布时间是当前时间两天前的物品，且只有当前拍下者是该商品的最高出价者的商品） -->
+    <select id="getMyOrder" resultType="com.itmk.web.goods.entity.Goods">
+        SELECT * FROM (
+        SELECT
+        g.*,
+        gr.order_id,
+        gr.create_time as sell_time,
+        gr.price,
+        ROW_NUMBER() OVER (
+        PARTITION BY gr.goods_id, gr.order_user  <!-- 按商品ID和买家ID分组 -->
+        ORDER BY gr.create_time DESC             <!-- 按交易时间倒序取最新 -->
+        ) AS row_num
+        FROM goods_order gr
+        LEFT JOIN goods g ON g.goods_id = gr.goods_id
+        WHERE gr.order_user = #{userId}                  <!-- 买家视角 -->
+<!--        AND g.create_time >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)  &lt;!&ndash; 发布时间是两天前 &ndash;&gt;-->
+        AND gr.price = (                               <!-- 当前拍下者是最高出价者 -->
+        SELECT MAX(price)
+        FROM goods_order
+        WHERE goods_id = gr.goods_id
+        )
+        ) AS temp
+        WHERE row_num = 1  <!-- 筛选每组最新记录 -->
+    </select>
+
+    <!-- 查询卖家订单（仅获取发布时间是当前时间两天前的物品，且只有当前拍下者是该商品的最高出价者的商品） -->
+    <select id="getSellOrder" resultType="com.itmk.web.goods.entity.Goods">
+        SELECT * FROM (
+        SELECT
+        g.*,
+        gr.order_id,
+        gr.create_time as sell_time,
+        gr.price,
+        ROW_NUMBER() OVER (
+        PARTITION BY gr.goods_id, g.user_id  <!-- 按商品ID和卖家ID分组 -->
+        ORDER BY gr.create_time DESC         <!-- 按交易时间倒序取最新 -->
+        ) AS row_num
+        FROM goods_order gr
+        LEFT JOIN goods g ON g.goods_id = gr.goods_id
+        WHERE g.user_id = #{userId}                  <!-- 卖家视角 -->
+<!--        AND g.create_time >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)  &lt;!&ndash; 发布时间是两天前 &ndash;&gt;-->
+        AND gr.price = (                           <!-- 当前拍下者是最高出价者 -->
+        SELECT MAX(price)
+        FROM goods_order
+        WHERE goods_id = gr.goods_id
+        )
+        ) AS temp
+        WHERE row_num = 1  <!-- 筛选每组最新记录 -->
+    </select>
+
 </mapper>

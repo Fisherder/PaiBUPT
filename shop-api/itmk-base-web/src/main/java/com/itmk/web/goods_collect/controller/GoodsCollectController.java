@@ -2,8 +2,11 @@ package com.itmk.web.goods_collect.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.itmk.utils.ResultUtils;
 import com.itmk.utils.ResultVo;
+import com.itmk.web.goods.entity.Goods;
+import com.itmk.web.goods_collect.entity.CollectParm;
 import com.itmk.web.goods_collect.entity.GoodsCollect;
 import com.itmk.web.goods_collect.service.GoodsCollectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +53,19 @@ public class GoodsCollectController {
         }else{ //未收藏
             return ResultUtils.success("查询成功","0");
         }
+    }
+    //小程序我的收藏列表
+    @GetMapping("/getMyCollect")
+    public ResultVo getMyCollect(CollectParm parm){
+        IPage<Goods> list = goodsCollectService.getMyCollect(parm);
+        return ResultUtils.success("查询成功",list);
+    }
+    //取消收藏
+    @PostMapping("/cancel")
+    public ResultVo cancel(@RequestBody GoodsCollect collect){
+        if(goodsCollectService.removeById(collect.getCollectId())){
+            return ResultUtils.success("取消成功！");
+        }
+        return ResultUtils.error("取消失败！");
     }
 }

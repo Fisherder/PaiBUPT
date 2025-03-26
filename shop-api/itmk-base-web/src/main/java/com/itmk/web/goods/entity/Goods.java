@@ -19,8 +19,8 @@ public class Goods {
     //拍下者的id
     private Long ownId;
     //订单id
-//    @TableField(exist = false)
-//    private Long orderId;
+    @TableField(exist = false)
+    private Long orderId;
     //分类id
     private Long categoryId;
     //类型 0：闲置 1：求购
@@ -32,8 +32,8 @@ public class Goods {
     //价格
     private BigDecimal goodsPrice;
     //交易价格
-//    @TableField(exist = false)
-//    private BigDecimal price;
+    @TableField(exist = false)
+    private BigDecimal price;
     //姓名
     private String userName;
     //拍下者名字
@@ -62,4 +62,11 @@ public class Goods {
 
     // 0：未删除 1：已删除
     private String deleteStatus;
+    //收藏id
+    @TableField(exist = false)
+    private Long collectId;
+    //交易时间
+    @TableField(exist = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date sellTime;
 }

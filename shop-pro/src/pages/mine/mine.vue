@@ -13,15 +13,18 @@
 		</view>
 		<view class="u-m-t-20">
 			<u-cell-group>
-				<u-cell-item icon="star" title="我的闲置"></u-cell-item>
-				<u-cell-item icon="photo" title="我的求购"></u-cell-item>
-				<u-cell-item icon="heart" title="我的收藏"></u-cell-item>
-				<u-cell-item icon="red-packet" title="我的订单"></u-cell-item>
-				<u-cell-item icon="order" title="出售订单"></u-cell-item>
-				<u-cell-item icon="edit-pen" title="修改密码"></u-cell-item>
+				<u-cell-item @click="toUnused" icon="star" title="我的闲置"></u-cell-item>
+					<u-cell-item @click="toMyBuy" icon="photo" title="我的求购"></u-cell-item>
+						<u-cell-item @click="toCollect" icon="heart" title="我的收藏"></u-cell-item>
+							<u-cell-item @click="toOrder" icon="red-packet" title="购买订单">
+							</u-cell-item>
+							<u-cell-item @click="toSellOrder" icon="order" title="出售订单">
+							</u-cell-item>
+							<u-cell-item @click="toUpdate" icon="edit-pen" title="修改密码">
+							</u-cell-item>
 			</u-cell-group>
 		</view>
-		
+
 		<view class="u-m-t-20">
 			<u-cell-group>
 				<u-cell-item @click="loginOut" icon="setting" title="退出账号"></u-cell-item>
@@ -31,33 +34,73 @@
 </template>
 
 <script setup>
-	import {ref} from 'vue';
-	const pic=ref('/static/user.jpg')
-	const show=ref(true)
-	
+	import {
+		ref
+	} from 'vue';
+	const pic = ref('/static/user.jpg')
+	const show = ref(true)
+
+	//我的闲置
+	const toUnused = () => {
+		uni.navigateTo({
+			url: "../my_unused/my_unused"
+		})
+	}
+	//我的求购
+	const toMyBuy = () => {
+		uni.navigateTo({
+			url: "../my_buy/my_buy"
+		})
+	}
+	//我的收藏
+	const toCollect = () => {
+		uni.navigateTo({
+			url: "../my_collect/my_collect"
+		})
+	}
+	//购买订单
+	const toOrder = () => {
+		uni.navigateTo({
+			url: "../my_order/my_order"
+		})
+	}
+	//出售订单
+	const toSellOrder = () => {
+		uni.navigateTo({
+			url: "../sell_order/sell_order"
+		})
+	}
+	//修改密码
+	const toUpdate = () => {
+		uni.navigateTo({
+			url: "../update_password/update_password"
+		})
+	}
+
 	//退出登录
-	const loginOut=()=>{
+	const loginOut = () => {
 		uni.clearStorageSync()
 		uni.navigateTo({
-			url:"../login/login"
+			url: "../login/login"
 		})
 	}
 </script>
 
 <style lang="scss">
-page{
-	background-color: #ededed;
-}
-
-.camera{
-	width: 54px;
-	height: 44px;
-	
-	&:active{
+	page {
 		background-color: #ededed;
 	}
-}
-.user-box{
-	background-color: #fff;
-}
+
+	.camera {
+		width: 54px;
+		height: 44px;
+
+		&:active {
+			background-color: #ededed;
+		}
+	}
+
+	.user-box {
+		background-color: #fff;
+	}
 </style>

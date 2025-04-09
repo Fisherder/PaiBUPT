@@ -4,9 +4,9 @@
 		<u-form class="forms" :model="loginModel" ref="form1">
 			<u-form-item left-icon="account-fill" left-icon-style="font-size:24px;color:#FF7670;"><u-input
 					placeholder="请输入账户" v-model="loginModel.username" /></u-form-item>
-			<u-form-item left-icon="lock" left-icon-style="font-size:24px;color:#FF7670;"><u-input placeholder="请输入密码"
-					v-model="loginModel.password" /></u-form-item>
-			<view class="passtext">
+			<u-form-item left-icon="lock" left-icon-style="font-size:24px;color:#FF7670;">
+				<u-input type="password" placeholder="请输入密码" v-model="loginModel.password" /></u-form-item>
+			<view @click="toForget" class="passtext">
 				忘记密码
 			</view>
 			<u-button @click="toCommit" :custom-style="customStyle1">登录</u-button>
@@ -64,6 +64,12 @@
 	const toRegister = () => {
 		uni.navigateTo({
 			url: '../register/register'
+		})
+	}
+	//忘记密码
+	const toForget=()=>{
+		uni.navigateTo({
+			url:"../forget_password/forget_password"
 		})
 	}
 	const customStyle1 = reactive({

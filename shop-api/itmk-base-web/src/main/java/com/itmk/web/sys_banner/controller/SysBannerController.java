@@ -101,6 +101,13 @@ public class SysBannerController {
         query.lambda().eq(SysBanner::getStatus,"0")
             .orderByAsc(SysBanner::getOrderNum);
         List<SysBanner> list=sysBannerService.list(query);
+        if(list.size()>0){
+            for(int i=0;i<list.size();i++){
+                Long goodsId=list.get(i).getGoodsId();
+                Goods goods=goodsService.getById(goodsId);
+                list.get(i).setGoods(goods);
+            }
+        }
         return ResultUtils.success("查询成功",list);
     }
 

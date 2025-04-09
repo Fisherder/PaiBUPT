@@ -3,7 +3,7 @@
 		<!-- 轮播图 -->
 		<swiper class="swiper-container" circular :indicatorColor="indicatorColor" :indicator-dots="indicatorDots"
 			:autoplay="autoplay" :interval="interval" :duration="duration">
-			<swiper-item v-for="(item,index) in swipperList" :key='index'>
+			<swiper-item @click="toDetail(item.goods)" v-for="(item,index) in swipperList" :key='index'>
 				<image class="imgs" :src="item.images.split(',')[0]"></image>
 			</swiper-item>
 		</swiper>

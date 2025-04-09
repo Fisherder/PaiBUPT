@@ -38,7 +38,7 @@
 		<!-- 取消收藏 -->
 		<u-popup :mask-close-able="false" border-radius="15" width="70%" height="120px" v-model="show" mode="center">
 			<view style="padding: 20px 15px 20px 15px;">
-				确定取消吗?
+				确定删除订单吗?
 			</view>
 			<view class="conBtn">
 				<u-button @click="cancel" style="margin-right: 15px;" type="info">取消</u-button>
@@ -59,7 +59,8 @@
 		ref
 	} from 'vue';
 	import {
-		getMyOrderApi
+		getMyOrderApi,
+		deleteOrderApi
 	} from '../../api/order.js'
 	const show = ref(false)
 	const list = ref([])
@@ -119,24 +120,24 @@
 		}
 	}
 	//取消收藏按钮
-	const collectId = ref('')
+	const orderId = ref('')
 	const cancelBtn = (item) => {
 		console.log(item)
-		collectId.value = item.collectId
+		orderId.value = item.orderId
 		show.value = true;
 	}
-	//确定取消
+	//确定删除
 	const confirm = async () => {
-		// console.log(collectId.value)
-		// let res = await cancelCollectApi({
-		// collectId:collectId.value
-		// })
-		// if(res && res.code == 200){
-		// parm.currentPage = 1;
-		// list.value = []
-		// getMyCollect()
-		// show.value = false;
-		// }
+		console.log(orderId.value)
+		let res = await deleteOrderApi({
+			orderId: orderId.value
+		})
+		if (res && res.code == 200) {
+			parm.currentPage = 1;
+			list.value = []
+			getMyCollect()
+			show.value = false;
+		}
 	}
 	//取消
 	const cancel = () => {
@@ -219,7 +220,7 @@
 				padding-top: 20rpx;
 				text-align: right;
 
-				 .decimal {
+				.decimal {
 					font-size: 24rpx;
 					margin-top: 4rpx;
 				}

@@ -125,7 +125,21 @@
 			"path" : "pages/look_buy/look_buy",
 			"style" : 
 			{
-				"navigationBarTitleText" : ""
+				"navigationBarTitleText" : "求购查看"
+			}
+		},
+		{
+			"path" : "pages/user_info/user_info",
+			"style" : 
+			{
+				"navigationBarTitleText" : "修改信息"
+			}
+		},
+		{
+			"path" : "pages/forget_password/forget_password",
+			"style" : 
+			{
+				"navigationBarTitleText" : "忘记密码"
 			}
 		}
 		

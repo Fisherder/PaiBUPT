@@ -10,6 +10,8 @@ import com.itmk.web.goods.service.GoodsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -47,10 +49,19 @@ public class GoodsController {
     @PostMapping("/upanddown")
     public ResultVo upanddown(@RequestBody UpandDownParm parm){
         UpdateWrapper<Goods> query = new UpdateWrapper<>();
-        query.lambda().set(Goods::getStatus,parm.getStatus())
-                .eq(Goods::getGoodsId,parm.getGoodsId());
-        if(goodsService.update(query)){
-            return ResultUtils.success("设置成功!");
+        query.lambda().eq(Goods::getGoodsId, parm.getGoodsId());
+        Goods goods = goodsService.getOne(query); // 获取 Goods 记录
+        Date goodsCreateTime = goods.getCreateTime(); // 获取商品的创建时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -48);
+        Date deadline = calendar.getTime();
+        //未超48h，可以上下架操作
+        if(goodsCreateTime.after(deadline)){
+            query.lambda().set(Goods::getStatus,parm.getStatus())
+                    .eq(Goods::getGoodsId,parm.getGoodsId());
+            if(goodsService.update(query)){
+                return ResultUtils.success("设置成功!");
+            }
         }
         return ResultUtils.error("设置失败!");
     }

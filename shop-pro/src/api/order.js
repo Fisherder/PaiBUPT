@@ -15,3 +15,7 @@ export const getMyOrderApi = (parm) => {
 export const getSellOrderApi = (parm) => {
 	return http.get('/api/goodsOrder/getSellOrder', parm)
 }
+//删除
+export const deleteOrderApi = (parm) => {
+	return http.post('/api/goodsOrder/deleteOrder', parm)
+}

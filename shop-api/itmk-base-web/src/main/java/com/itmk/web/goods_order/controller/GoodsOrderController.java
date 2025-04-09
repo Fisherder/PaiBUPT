@@ -8,6 +8,8 @@ import com.itmk.web.goods.entity.Goods;
 import com.itmk.web.goods.entity.MyGoodsParm;
 import com.itmk.web.goods.service.GoodsService;
 import com.itmk.web.goods_order.entity.GoodsOrder;
+import com.itmk.web.goods_order.entity.OrderParm;
+import com.itmk.web.goods_order.entity.OrderVo;
 import com.itmk.web.goods_order.service.GoodsOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -62,5 +64,19 @@ public class GoodsOrderController {
     public ResultVo getSellOrder(MyGoodsParm parm){
         IPage<Goods> list = goodsService.getSellOrder(parm);
         return ResultUtils.success("查询成功！",list);
+    }
+    //删除订单
+    @PostMapping("/deleteOrder")
+    public ResultVo deleteOrder(@RequestBody GoodsOrder parm){
+        if(goodsOrderService.removeById(parm.getOrderId())){
+            return ResultUtils.success("删除成功！");
+        }
+        return ResultUtils.error("删除失败！");
+    }
+    //订单列表
+    @GetMapping("/getList")
+    public ResultVo getList(OrderParm parm){
+        IPage<OrderVo> list = goodsOrderService.getList(parm);
+        return ResultUtils.success("查询成功",list);
     }
 }

@@ -1,10 +1,14 @@
 package com.itmk.web.goods_order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itmk.web.goods.entity.Goods;
 import com.itmk.web.goods.service.GoodsService;
 import com.itmk.web.goods_order.entity.GoodsOrder;
+import com.itmk.web.goods_order.entity.OrderParm;
+import com.itmk.web.goods_order.entity.OrderVo;
 import com.itmk.web.goods_order.mapper.GoodsOrderMapper;
 import com.itmk.web.goods_order.service.GoodsOrderService;
 import com.itmk.web.wx_user.entity.WxUser;
@@ -43,5 +47,11 @@ public class GoodsOrderServiceImpl extends ServiceImpl<GoodsOrderMapper, GoodsOr
                     .eq(Goods::getGoodsId,goodsOrder.getGoodsId());
             goodsService.update(query);
         }
+    }
+    @Override
+    public IPage<OrderVo> getList(OrderParm parm){
+        //构造分页对象
+        IPage<OrderVo> page =new Page<>(parm.getCurrentPage(),parm.getPageSize());
+        return this.baseMapper.getList(page,parm);
     }
 }

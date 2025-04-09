@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itmk.utils.ResultUtils;
 import com.itmk.utils.ResultVo;
-import com.itmk.web.wx_user.entity.LoginVo;
-import com.itmk.web.wx_user.entity.WxUser;
-import com.itmk.web.wx_user.entity.WxUserParm;
+import com.itmk.web.wx_user.entity.*;
 import com.itmk.web.wx_user.service.WxUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,4 +106,59 @@ public class WxUserController {
         }
         return  ResultUtils.error("删除失败！");
     }
+    //小程序更新密码
+    @PostMapping("/wxupdatePassword")
+    public ResultVo wxupdatePassword(@RequestBody UpdateParm parm){
+//判断原密码是否正确
+        QueryWrapper<WxUser> query = new QueryWrapper<>();
+        query.lambda().eq(WxUser::getUserId,parm.getUserId())
+                .eq(WxUser::getPassword,DigestUtils.md5DigestAsHex(parm.getOldPassword().getBytes()));
+        WxUser one = wxUserService.getOne(query);
+        if(one == null){
+            return ResultUtils.error("原密码不正确!");
+        }
+        UpdateWrapper<WxUser> update = new UpdateWrapper<>();
+        update.lambda().set(WxUser::getPassword,DigestUtils.md5DigestAsHex(parm.getPassword().getBytes()))
+                .eq(WxUser::getUserId,parm.getUserId());
+        if(wxUserService.update(update)){
+            return ResultUtils.success("密码修改成功!");
+        }
+        return ResultUtils.error("密码修改失败！");
+    }
+    //小程序修改信息
+    @PostMapping("/editInfo")
+    public ResultVo editInfo(@RequestBody WxUser wxUser){
+        if(wxUserService.updateById(wxUser)){
+            return ResultUtils.success("修改成功！");
+        }
+        return ResultUtils.error("修改失败！");
+    }
+    //小程序查询个人信息
+    @GetMapping("/getInfo")
+    public ResultVo getInfo(Long userId){
+        WxUser user = wxUserService.getById(userId);
+        return ResultUtils.success("查询成功！",user);
+    }
+    //忘记密码
+    @PostMapping("/forget")
+    public ResultVo forget(@RequestBody ForgetParm parm){
+        //查询用户是否存在
+        QueryWrapper<WxUser> query = new QueryWrapper<>();
+        query.lambda().eq(WxUser::getUsername,parm.getUsername())
+                .eq(WxUser::getPhone,parm.getPhone());
+        WxUser one = wxUserService.getOne(query);
+        if(one == null){
+            return ResultUtils.error("用户或电话号不正确！");
+        }
+        //更新条件
+        UpdateWrapper<WxUser> update = new UpdateWrapper<>();
+        update.lambda().set(WxUser::getPassword,DigestUtils.md5DigestAsHex(parm.getPassword().getBytes()))
+                .eq(WxUser::getUsername,parm.getUsername())
+                .eq(WxUser::getPhone,parm.getPhone());
+        if(wxUserService.update(update)){
+            return ResultUtils.success("重置成功！");
+        }
+        return ResultUtils.error("重置失败！");
+    }
+
 }

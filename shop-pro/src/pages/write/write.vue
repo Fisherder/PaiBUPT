@@ -37,9 +37,8 @@
 			<u-form-item prop="image" label="图片:"></u-form-item>
 			<u-upload ref="imgRef" @on-remove="onRemove" @on-change="onChange" :action="action"></u-upload>
 		</u-form>
-		<u-button @click="ask" :custom-style="customStyle">咨询起价建议</u-button>
-		
-		<u-button @click="commit" :custom-style="customStyle">发布</u-button>
+		<u-button @click="ask" :custom-style="askBtnStyle">向大模型咨询起价建议</u-button>
+		<u-button @click="commit" :custom-style="commitBtnStyle">发布</u-button>
 	</view>
 </template>
 <script setup>
@@ -57,7 +56,7 @@
 	} from '../../api/goods.js'
 	//表单ref属性，form1与上面的ref相绑定，通过prop实现验证
 	const form1 = ref()
-	const imgRef=ref()
+	const imgRef = ref()
 	const addModel = reactive({
 		userId: uni.getStorageSync('userId'),
 		name: '',
@@ -200,38 +199,54 @@
 		addModel.categoryId = e[0].value;
 	}
 	//咨询
-	const ask=()=>{
-		
+	const ask = () => {
+		uni.navigateTo({
+			url: "../price_detail/price_detail"
+		})
 	}
 	//发布提交
 	const commit = () => {
 		//表单验证
-		form1.value.validate(async(valid) => {
+		form1.value.validate(async (valid) => {
 			console.log(valid)
-			if(valid){
-				let res=await releaseApi(addModel)
-				if(res && res.code==200){
+			if (valid) {
+				let res = await releaseApi(addModel)
+				if (res && res.code == 200) {
 					console.log(res)
-					if(addModel.type=='0'){
+					if (addModel.type == '0') {
 						uni.switchTab({
-								url:'../unused/unused'
+							url: '../unused/unused'
 						})
-					}else{
+					} else {
 						uni.switchTab({
-							url:'../buy/buy'
+							url: '../buy/buy'
 						})
 					}
 					//清空数据
 					form1.value.resetFields()
-					imgUrl.value=[]
-					addModel.image='';
-					fileList.value=[]
+					imgUrl.value = []
+					addModel.image = '';
+					fileList.value = []
 					imgRef.value.clear()
 				}
 			}
 		})
 		console.log(addModel)
 	}
+	const askBtnStyle = reactive({
+		background: '#FF7670',
+		color: '#FFF',
+		marginTop: '50px',
+		marginBottom: '20px', // 添加底部间距，使两个按钮更靠近
+		width: '100%'
+	})
+
+	const commitBtnStyle = reactive({
+		background: '#FF7670',
+		color: '#FFF',
+		marginTop: '0px', // 减少顶部间距
+		width: '100%'
+	})
 	//类型点击事件
 	const radioChange = (e) => {
 		console.log(e)

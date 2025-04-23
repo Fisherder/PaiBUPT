@@ -141,6 +141,13 @@
 			{
 				"navigationBarTitleText" : "忘记密码"
 			}
+		},
+		{
+			"path" : "pages/price_detail/price_detail",
+			"style" : 
+			{
+				"navigationBarTitleText" : "价格助手"
+			}
 		}
 		
 		

@@ -1,7 +1,7 @@
 {
-    "name" : "",
+    "name" : "CozeBot示例",
     "appid" : "",
-    "description" : "",
+    "description" : "调用Coze机器人的示例",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,
@@ -50,9 +50,12 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wxa9e30e5a64d85dd4",
+        "appid" : "	wx76bb89c3ff1c3b88	wx76bb89c3ff1c3b88	wx76bb89c3ff1c3b88",
         "setting" : {
-            "urlCheck" : false
+            "urlCheck" : false,
+            "es6" : true,
+            "postcss" : true,
+            "minified" : true
         },
         "usingComponents" : true
     },

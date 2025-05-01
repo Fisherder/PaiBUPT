@@ -10,7 +10,7 @@ import com.itmk.web.goods.service.GoodsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import com.itmk.web.elasticsearch.service.ElasticsearchService;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -20,12 +20,18 @@ import java.util.List;
 public class GoodsController {
     @Autowired
     private GoodsService goodsService;
+
+    // 添加Elasticsearch服务
+    @Autowired
+    private ElasticsearchService elasticsearchService;
     //发布
     @PostMapping("/release")
     public ResultVo release(@RequestBody Goods goods){
 //设置时间
         goods.setCreateTime(new Date());
         if(goodsService.save(goods)){
+            // 同步到Elasticsearch
+            elasticsearchService.indexGoods(goods);
             return ResultUtils.success("发布成功!");
         }
         return ResultUtils.error("发布失败!");
@@ -60,6 +66,10 @@ public class GoodsController {
             query.lambda().set(Goods::getStatus,parm.getStatus())
                     .eq(Goods::getGoodsId,parm.getGoodsId());
             if(goodsService.update(query)){
+                // 获取更新后的商品信息
+                Goods goods1 = goodsService.getById(parm.getGoodsId());
+                // 同步到Elasticsearch
+                elasticsearchService.updateGoods(goods1);
                 return ResultUtils.success("设置成功!");
             }
         }
@@ -72,6 +82,10 @@ public class GoodsController {
         query.lambda().set(Goods::getSetIndex,parm.getSetIndex())
                 .eq(Goods::getGoodsId,parm.getGoodsId());
         if(goodsService.update(query)){
+            // 获取更新后的商品信息
+            Goods goods = goodsService.getById(parm.getGoodsId());
+            // 同步到Elasticsearch
+            elasticsearchService.updateGoods(goods);
             return ResultUtils.success("设置成功!");
         }
         return ResultUtils.error("设置失败!");
@@ -84,6 +98,8 @@ public class GoodsController {
         query.lambda().set(Goods::getDeleteStatus,"1")
                 .eq(Goods::getGoodsId,parm.getGoodsId());
         if(goodsService.update(query)){
+            // 从Elasticsearch中删除
+            elasticsearchService.deleteGoods(parm.getGoodsId());
             return ResultUtils.success("删除成功!");
         }
         return ResultUtils.error("删除失败!");

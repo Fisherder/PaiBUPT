@@ -86,6 +86,24 @@
 				微信:{{wxNum}}
 			</view>
 		</view>
+		
+		<!-- 添加猜你喜欢区域 -->
+		<view class="info-fa" v-if="similarGoods.length > 0">
+			<view class="fa-left"></view>
+			<view class="goodsInfo">
+				猜你喜欢
+			</view>
+		</view>
+		<view class="similar-goods" v-if="similarGoods.length > 0">
+			<scroll-view scroll-x="true" class="scroll-view">
+				<view class="similar-item" v-for="(item, index) in similarGoods" :key="index" @click="toOtherDetail(item)">
+					<image :src="item.image" mode="aspectFill"></image>
+					<view class="similar-name">{{item.goodsName}}</view>
+					<view class="similar-price">￥{{item.goodsPrice}}</view>
+				</view>
+			</scroll-view>
+		</view>
+		
 		<view class="navigation">
 			<view class="left">
 				<view @click="toHome" class="item">
@@ -143,7 +161,7 @@
 
 <script setup>
 	import {
-		onLoad
+		onLoad, onMounted
 	} from '@dcloudio/uni-app';
 	import {
 		ref,
@@ -158,6 +176,8 @@
 		collectApi,
 		hasCollectApi
 	} from '../../api/unused';
+	import { behaviorApi, searchApi } from '../../api/api'; // 引入行为API和搜索API
+	
 	const customStyle = reactive({
 		background: '#FF7670'
 	})
@@ -208,24 +228,120 @@
 		return uni.$u.date(newTime, 'yyyy-mm-dd hh:MM:ss');
 	});
 	const goodsId = ref('')
+	// 相似商品列表
+	const similarGoods = ref([])
+	// 用户信息
+	const userInfo = ref(null)
+	
+	// 获取用户信息
+	const getUserInfo = () => {
+		try {
+			// 获取用户信息
+			const userId = uni.getStorageSync('userId');
+			const username = uni.getStorageSync('username');
+			if (userId) {
+				userInfo.value = {
+					userId: userId,
+					username: username
+				};
+			}
+		} catch (e) {
+			console.error('获取用户信息失败', e);
+		}
+	}
+	
+	// 记录浏览行为
+	const recordViewBehavior = async () => {
+		try {
+			if (userInfo.value && userInfo.value.userId && goodsId.value) {
+				await behaviorApi.recordView(userInfo.value.userId, goodsId.value);
+				console.log('浏览行为记录成功');
+			}
+		} catch (error) {
+			console.error('浏览行为记录失败', error);
+		}
+	}
+	
+	// 获取相似商品推荐
+	const getSimilarGoods = async () => {
+		try {
+			// 调用相似商品API
+			const params = {
+				goodsId: goodsId.value,
+				limit: 10 // 限制推荐数量
+			};
+			
+			// 如果用户已登录，传入用户ID以获取个性化推荐
+			if (userInfo.value && userInfo.value.userId) {
+				params.userId = userInfo.value.userId;
+			}
+			
+			// 调用相似商品推荐API
+			const res = await searchApi.getSimilarGoods(params);
+			if (res && res.code == 200) {
+				// 过滤掉当前商品
+				similarGoods.value = (res.data || []).filter(item => item.goodsId != goodsId.value);
+			}
+		} catch (error) {
+			console.error('获取相似商品失败', error);
+		}
+	}
+	
 	//跳转首页
 	const toHome = () => {
 		uni.switchTab({
 			url: "../index/index"
 		})
 	}
-	//收藏按钮
-	const collectBtn = async () => {
-
-		let res = await collectApi({
-			userId: uni.getStorageSync("userId"),
-			goodsId: goodsId.value
-		})
-		if (res && res.code == 200) {
-			console.log(res)
-			hasCollect()
+	
+	// 跳转到其他商品详情
+	const toOtherDetail = (item) => {
+		// 记录浏览行为
+		if (userInfo.value && userInfo.value.userId) {
+			behaviorApi.recordView(userInfo.value.userId, item.goodsId);
+		}
+		
+		// 跳转到详情页
+		if (item.type == '0') {
+			uni.navigateTo({
+				url: "../unused_detail/unused_detail?goods=" + JSON.stringify(item)
+			})
+		} else {
+			uni.navigateTo({
+				url: "../buy_detail/buy_detail?goods=" + JSON.stringify(item)
+			})
 		}
 	}
+	
+	//收藏按钮
+	const collectBtn = async () => {
+		try {
+			let res = await collectApi({
+				userId: uni.getStorageSync("userId"),
+				goodsId: goodsId.value
+			})
+			if (res && res.code == 200) {
+				console.log(res)
+				
+				// 记录收藏行为
+				if (userInfo.value && userInfo.value.userId) {
+					// 根据当前收藏状态决定是记录收藏还是取消收藏
+					const newStatus = hasStatus.value === '0' ? '1' : '0';
+					
+					if (newStatus === '1') {
+						// 记录收藏行为
+						await behaviorApi.recordFavorite(userInfo.value.userId, goodsId.value);
+						console.log('收藏行为记录成功');
+					}
+				}
+				
+				hasCollect()
+			}
+		} catch (error) {
+			console.error('收藏操作失败', error);
+		}
+	}
+	
 	const hasStatus = ref('0')
 	//查询是否收藏
 	const hasCollect = async () => {
@@ -288,28 +404,7 @@
 			})
 			return
 		}
-		// //出价不能小于上次报价
-		// if (addModel.price < goodsPrice.value) {
-		// 	uni.showToast({
-		// 		title: '出价要高于上次报价',
-		// 		icon: "none",
-		// 		mask: true,
-		// 		duration: 3000
-		// 	})
-		// 	return
-		// }
-		//不能拍卖过了deadline的物品
-		// const currentTime = new Date().getTime();
-		// const deadlineTime = new Date(deadline.value).getTime();
-		// if (currentTime > deadlineTime) {
-		// 	uni.showToast({
-		// 		title: '不能拍卖过了截止日期的商品',
-		// 		icon: "none",
-		// 		mask: true,
-		// 		duration: 3000
-		// 	})
-		// 	return
-		// }
+		
 		let res = await replaceOrderApi(addModel)
 		if (res && res.code == 200) {
 			// 重新获取商品详情数据
@@ -319,6 +414,13 @@
 				// 更新所有相关响应式变量
 				maxUser.value = updatedGoods.ownName;
 				goodsPrice.value = updatedGoods.goodsPrice;
+				
+				// 记录购买行为
+				if (userInfo.value && userInfo.value.userId) {
+					await behaviorApi.recordPurchase(userInfo.value.userId, goodsId.value);
+					console.log('购买行为记录成功');
+				}
+				
 				uni.showToast({
 					title: '交易成功',
 					icon: "success",
@@ -326,20 +428,11 @@
 					duration: 3000
 				});
 				show.value = false;
-				// uni.navigateTo({
-				// 	url:"../my_order/my_order"
-				// })
 			}
-			// maxUser.value = uni.getStorageSync("username");
-			// goodsPrice.value = addModel.price;
-			// 提示用户交易成功
-
-			// // 强制刷新（如果需要）
-			// await nextTick();
 		}
-
 	}
-	onLoad((options) => {
+	
+	onLoad(async (options) => {
 		const goods = JSON.parse(options.goods)
 		console.log(goods)
 		goodsId.value = goods.goodsId;
@@ -357,8 +450,18 @@
 		phone.value = goods.phone;
 		wxNum.value = goods.wxNum;
 		maxUser.value = goods.ownName;
-		//查询是否收藏
-		hasCollect()
+		
+		// 获取用户信息
+		getUserInfo();
+		
+		// 查询是否收藏
+		hasCollect();
+		
+		// 记录浏览行为
+		await recordViewBehavior();
+		
+		// 获取相似商品推荐
+		await getSimilarGoods();
 	})
 </script>
 
@@ -415,7 +518,47 @@
 		display: flex;
 		flex-direction: column;
 		margin-left: 20px;
+		margin-bottom: 20px;
+	}
+	
+	/* 相似商品样式 */
+	.similar-goods {
+		background-color: #FFF;
+		padding: 20rpx;
 		margin-bottom: 80px;
+	}
+	
+	.scroll-view {
+		white-space: nowrap;
+		width: 100%;
+	}
+	
+	.similar-item {
+		display: inline-block;
+		width: 200rpx;
+		margin-right: 20rpx;
+	}
+	
+	.similar-item image {
+		width: 200rpx;
+		height: 200rpx;
+		border-radius: 10rpx;
+	}
+	
+	.similar-name {
+		font-size: 24rpx;
+		white-space: normal;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+	
+	.similar-price {
+		font-size: 24rpx;
+		color: #FF7670;
+		font-weight: bold;
 	}
 
 	.navigation {

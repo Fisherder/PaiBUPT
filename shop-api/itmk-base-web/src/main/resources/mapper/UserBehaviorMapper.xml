@@ -1,0 +1,47 @@
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itmk.web.user_behavior.mapper.UserBehaviorMapper">
+
+    <!-- 基础列映射 -->
+    <resultMap id="BaseResultMap" type="com.itmk.web.user_behavior.entity.UserBehavior">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="goods_id" property="goodsId" jdbcType="BIGINT"/>
+        <result column="behavior_type" property="behaviorType" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 获取用户最近的行为记录 -->
+    <select id="getUserRecentBehaviors" resultMap="BaseResultMap">
+        SELECT * FROM user_behavior
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+            LIMIT #{limit}
+    </select>
+
+    <!-- 获取用户浏览过的商品ID列表 -->
+    <select id="getUserViewedGoodsIds" resultType="java.lang.Long">
+        SELECT goods_id FROM user_behavior
+        WHERE user_id = #{userId} AND behavior_type = '1'
+        ORDER BY create_time DESC
+            LIMIT #{limit}
+    </select>
+
+    <!-- 获取用户收藏的商品ID列表 -->
+    <select id="getUserFavoriteGoodsIds" resultType="java.lang.Long">
+        SELECT goods_id FROM user_behavior
+        WHERE user_id = #{userId} AND behavior_type = '2'
+        ORDER BY create_time DESC
+            LIMIT #{limit}
+    </select>
+
+    <!-- 获取用户购买的商品ID列表 -->
+    <select id="getUserPurchasedGoodsIds" resultType="java.lang.Long">
+        SELECT goods_id FROM user_behavior
+        WHERE user_id = #{userId} AND behavior_type = '3'
+        ORDER BY create_time DESC
+            LIMIT #{limit}
+    </select>
+</mapper>

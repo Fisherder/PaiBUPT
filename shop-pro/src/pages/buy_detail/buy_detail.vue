@@ -182,7 +182,21 @@
 	}
 	//收藏按钮
 	const collectBtn = async () => {
-
+		 const userId = uni.getStorageSync("userId")
+		  if (!userId) {
+		    uni.showModal({
+		      title: '提示',
+		      content: '收藏功能需要登录，是否前往登录？',
+		      success: function(res) {
+		        if (res.confirm) {
+		          uni.navigateTo({
+		            url: '../login/login'
+		          })
+		        }
+		      }
+		    })
+		    return
+		  }
 		let res = await collectApi({
 			userId: uni.getStorageSync("userId"),
 			goodsId: goodsId.value

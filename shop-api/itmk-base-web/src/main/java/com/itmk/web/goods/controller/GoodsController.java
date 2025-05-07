@@ -176,4 +176,21 @@ public class GoodsController {
         }
         return ResultUtils.error("编辑失败");
     }
+    // 获取特定分类的推荐商品
+    @GetMapping("/getCategoryRecommend")
+    public ResultVo getCategoryRecommend(@RequestParam Long categoryId, @RequestParam(defaultValue = "5") Integer limit) {
+        // 构造查询条件
+        QueryWrapper<Goods> query = new QueryWrapper<>();
+        query.lambda()
+                .eq(Goods::getCategoryId, categoryId) // 添加分类ID过滤条件
+                .eq(Goods::getDeleteStatus, "0")
+                .eq(Goods::getStatus, "0")
+                .eq(Goods::getSellStatus, "0")
+                .eq(Goods::getSetIndex, "1")  // 保留只查询推荐商品
+                .orderByDesc(Goods::getCreateTime)
+                .last("LIMIT " + limit);  // 限制返回数量
+
+        List<Goods> list = goodsService.list(query);
+        return ResultUtils.success("查询成功", list);
+    }
 }

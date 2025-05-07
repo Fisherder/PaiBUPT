@@ -19,7 +19,7 @@
 <script setup>
 	import {
 		reactive,
-		ref
+		ref,getCurrentInstance
 	} from 'vue';
 	import {
 		loginApi
@@ -49,16 +49,31 @@
 			})
 			return;
 		}
-		let res = await loginApi(loginModel)
-		if(res && res.code==200){
-			//存储用户id
-			console.log(res)
-			uni.setStorageSync('userId',res.data.userId)
-			//跳转首页
-			uni.switchTab({
-				url:'../index/index'
-			})
-		}
+		   let res = await loginApi(loginModel)
+		      if(res && res.code==200){
+		          // 使用全局方法处理登录成功
+		          const instance = getCurrentInstance();
+		          if (instance && instance.proxy && instance.proxy.$appData) {
+		              // 保存用户信息并触发登录成功事件
+		              instance.proxy.$appData.loginSuccess(res.data);
+		          } else {
+		              // 如果无法访问实例，直接保存基本信息
+		              uni.setStorageSync('userId', res.data.userId);
+		          }
+		          
+		          // 获取页面栈
+		          const pages = getCurrentPages();
+		          
+		          // 如果从其他页面来，返回
+		          if (pages.length > 1) {
+		              uni.navigateBack();
+		          } else {
+		              // 否则去首页
+		              uni.switchTab({
+		                  url: '../index/index'
+		              });
+		          }
+		      }
 	}
 	//去注册
 	const toRegister = () => {

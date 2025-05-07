@@ -206,6 +206,22 @@
 	}
 	//发布提交
 	const commit = () => {
+		 // 检查用户是否已登录
+		  const userId = uni.getStorageSync('userId')
+		  if (!userId) {
+		    uni.showModal({
+		      title: '提示',
+		      content: '发布商品需要登录，是否前往登录？',
+		      success: function(res) {
+		        if (res.confirm) {
+		          uni.navigateTo({
+		            url: '../login/login'
+		          })
+		        }
+		      }
+		    })
+		    return
+		  }
 		//表单验证
 		form1.value.validate(async (valid) => {
 			console.log(valid)

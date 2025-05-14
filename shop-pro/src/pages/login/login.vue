@@ -19,7 +19,8 @@
 <script setup>
 	import {
 		reactive,
-		ref,getCurrentInstance
+		ref,
+		getCurrentInstance
 	} from 'vue';
 	import {
 		loginApi
@@ -30,50 +31,87 @@
 		password: ''
 	})
 	//登录
-	const toCommit = async() => {
-		if(!loginModel.username){
+	// login.vue 页面中 toCommit 函数的改进版本
+
+	const toCommit = async () => {
+		if (!loginModel.username) {
 			uni.showToast({
 				title: '请输入账户',
 				icon: 'none',
-				//延迟时间
 				duration: 2000
 			})
 			return;
 		}
-		if(!loginModel.password){
+		if (!loginModel.password) {
 			uni.showToast({
 				title: '请输入密码',
 				icon: 'none',
-				//延迟时间
 				duration: 2000
 			})
 			return;
 		}
-		   let res = await loginApi(loginModel)
-		      if(res && res.code==200){
-		          // 使用全局方法处理登录成功
-		          const instance = getCurrentInstance();
-		          if (instance && instance.proxy && instance.proxy.$appData) {
-		              // 保存用户信息并触发登录成功事件
-		              instance.proxy.$appData.loginSuccess(res.data);
-		          } else {
-		              // 如果无法访问实例，直接保存基本信息
-		              uni.setStorageSync('userId', res.data.userId);
-		          }
-		          
-		          // 获取页面栈
-		          const pages = getCurrentPages();
-		          
-		          // 如果从其他页面来，返回
-		          if (pages.length > 1) {
-		              uni.navigateBack();
-		          } else {
-		              // 否则去首页
-		              uni.switchTab({
-		                  url: '../index/index'
-		              });
-		          }
-		      }
+
+		try {
+			let res = await loginApi(loginModel)
+			if (res && res.code == 200) {
+				// 保存用户ID到本地存储
+				console.log("登录成功，保存用户信息:", res.data);
+				uni.setStorageSync('userId', res.data.userId);
+
+				// 使用全局方法处理登录成功
+				const instance = getCurrentInstance();
+				if (instance && instance.proxy && instance.proxy.$appData) {
+					// 保存用户信息并触发登录成功事件
+					instance.proxy.$appData.loginSuccess(res.data);
+				}
+
+				// 检查是否有登录后重定向
+				const redirectInfo = uni.getStorageSync('redirect_after_login');
+				if (redirectInfo) {
+					uni.removeStorageSync('redirect_after_login'); // 清除重定向信息
+
+					console.log("检测到重定向信息，准备跳转到:", redirectInfo);
+
+					if (redirectInfo.page === 'unused_detail' && redirectInfo.params?.goodsId) {
+						// 获取商品详情
+						let goodsDetail = await getGoodsDetailApi({
+							goodsId: redirectInfo.params.goodsId
+						});
+
+						if (goodsDetail && goodsDetail.code === 200 && goodsDetail.data) {
+							// 重定向到商品详情页
+							uni.redirectTo({
+								url: `../unused_detail/unused_detail?goods=${encodeURIComponent(JSON.stringify(goodsDetail.data))}`
+							});
+							return;
+						}
+					}
+				}
+
+				// 没有重定向信息或获取商品详情失败，则使用默认重定向逻辑
+				const pages = getCurrentPages();
+				if (pages.length > 1) {
+					uni.navigateBack();
+				} else {
+					uni.switchTab({
+						url: '../index/index'
+					});
+				}
+			} else {
+				uni.showToast({
+					title: res?.msg || '登录失败',
+					icon: 'none',
+					duration: 2000
+				});
+			}
+		} catch (error) {
+			console.error("登录过程出错:", error);
+			uni.showToast({
+				title: '登录过程中出现错误',
+				icon: 'none',
+				duration: 2000
+			});
+		}
 	}
 	//去注册
 	const toRegister = () => {
@@ -82,9 +120,9 @@
 		})
 	}
 	//忘记密码
-	const toForget=()=>{
+	const toForget = () => {
 		uni.navigateTo({
-			url:"../forget_password/forget_password"
+			url: "../forget_password/forget_password"
 		})
 	}
 	const customStyle1 = reactive({

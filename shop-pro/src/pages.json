@@ -196,5 +196,14 @@
 				"text": "我的"
 			}
 		]
-	}
+	},
+	 "permission": {
+	        "scope.userLocation": {
+	            "desc": "你的位置信息将用于显示商品位置和计算距离"
+	        }
+	    },
+	    "requiredPrivateInfos": [
+	        "getLocation",
+	        "chooseLocation"
+	    ]
 }

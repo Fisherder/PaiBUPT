@@ -3,5 +3,6 @@ export type ListParm = {
     currentPage:number,
     pageSize:number,
     goodsName:string,
-    total?:number
+    total?:number,
+    userId?: string |null // 添加这一行
     }

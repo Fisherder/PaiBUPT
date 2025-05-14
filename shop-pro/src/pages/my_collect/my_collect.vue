@@ -66,18 +66,25 @@
 		collectId.value = item.collectId
 		show.value = true;
 	}
-	//确定取消
+	// 修改后的代码 - 移除登录检查：
 	const confirm = async () => {
-		console.log(collectId.value)
-		let res = await cancelCollectApi({
-			collectId: collectId.value
-		})
-		if (res && res.code == 200) {
-			parm.currentPage = 1;
-			list.value = []
-			getMyCollect()
-			show.value = false;
-		}
+	    // 直接执行取消收藏，不检查登录状态
+	    let res = await cancelCollectApi({
+	        collectId: collectId.value
+	    });
+	    
+	    if (res && res.code == 200) {
+	        parm.currentPage = 1;
+	        list.value = [];
+	        getMyCollect();
+	        show.value = false;
+	    } else {
+	        // 添加失败提示
+	        uni.showToast({
+	            title: res?.msg || "取消失败",
+	            icon: 'none'
+	        });
+	    }
 	}
 	//取消
 	const cancel = () => {

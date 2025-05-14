@@ -47,20 +47,24 @@
     currentPage:1,
     pageSize:10,
     goodsName:'',
-    total:0
+    total:0,
+    userId: sessionStorage.getItem('userId')  // 添加此行
     })
     //表格数据
     const tableList = ref([])
-    //获取列表
-    const getList = async()=>{
-    let res = await getListApi(parm)
+   // 在getList函数中修改
+//获取列表
+const getList = async () => {
+    // 确保有userId参数
+    parm.userId = sessionStorage.getItem('userId');
+    let res = await getListApi(parm);
     if(res && res.code == 200){
-    console.log(res)
-    //设置表格数据
-    tableList.value = res.data.records;
-    parm.total = res.data.total;
+        console.log(res);
+        //设置表格数据
+        tableList.value = res.data.records;
+        parm.total = res.data.total;
     }
-    }
+}
     //页容量改变时触发
     const sizeChange = (size:number)=>{
     parm.pageSize = size;

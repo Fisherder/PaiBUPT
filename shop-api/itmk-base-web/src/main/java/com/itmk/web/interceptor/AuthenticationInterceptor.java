@@ -37,11 +37,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         String path = request.getRequestURI();
 
         // 定义需要身份验证的路径
-        return path.contains("/api/collect/") ||
-                path.contains("/api/goods/getMyUnusedList") ||
-                path.contains("/api/goodsOrder/") ||
-                path.contains("/api/wxUser/wxupdatePassword") ||
-                path.contains("/api/wxUser/editInfo") ||
+        //path.contains("/api/collect/") ||
+        return    path.contains("/api/goods/getMyUnusedList") ||
+                //path.contains("/api/goodsOrder/") ||
+                //path.contains("/api/wxUser/wxupdatePassword") ||
+                //path.contains("/api/wxUser/editInfo") ||
                 path.contains("/api/wxUser/getInfo");
     }
 

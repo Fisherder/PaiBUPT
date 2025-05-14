@@ -53,6 +53,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
                         "/api/goods/getIndexList",
                         "/api/goods/getUsedList",
                         "/api/goods/getBuyList"
+
                 );
     }
 }

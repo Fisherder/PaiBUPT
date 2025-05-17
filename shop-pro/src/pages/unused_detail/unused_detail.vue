@@ -245,19 +245,64 @@
 	//发布时间
 	const createTime = ref('')
 	// 计算属性：createTime + 48 小时
-	const deadline = computed(() => {
-		if (!createTime.value) return '';
+	// 修改 deadline 计算属性
+// 只修改deadline计算属性部分
 
-		// 将 createTime 转换为 Date 对象
-		const originTime = new Date(createTime.value);
+// 计算属性：createTime + 48 小时
+const deadline = computed(() => {
+    if (!createTime.value) return '';
 
-		// 添加 48 小时（48 * 60 * 60 * 1000 毫秒）
-		const newTime = new Date(originTime.getTime() + 48 * 60 * 60 * 1000);
-
-		// 格式化时间（示例格式：YYYY-MM-DD HH:mm:ss）
-		// 使用 uView 的日期格式化工具（需确保已配置）
-		return uni.$u.date(newTime, 'yyyy-mm-dd hh:MM:ss');
-	});
+    try {
+        // 将 createTime 转换为 Date 对象
+        const originTime = new Date(createTime.value);
+        console.log("原始时间:", createTime.value);
+        console.log("解析后的时间对象:", originTime);
+        
+        // 检查日期是否有效
+        if (isNaN(originTime.getTime())) {
+            console.error("无法解析日期:", createTime.value);
+            
+            // 尝试解析日期部分
+            if (typeof createTime.value === 'string' && createTime.value.includes('-')) {
+                const [year, month, day] = createTime.value.split('-').map(Number);
+                const fallbackDate = new Date(year, month - 1, day);
+                fallbackDate.setHours(23, 59, 59); // 设置为当天结束
+                
+                // 添加 48 小时
+                const newTime = new Date(fallbackDate.getTime() + 48 * 60 * 60 * 1000);
+                
+                // 格式化输出
+                const formattedYear = newTime.getFullYear();
+                const formattedMonth = String(newTime.getMonth() + 1).padStart(2, '0');
+                const formattedDay = String(newTime.getDate()).padStart(2, '0');
+                
+                return `${formattedYear}-${formattedMonth}-${formattedDay} 23:59:59`;
+            }
+            
+            return '无法计算截止时间';
+        }
+        
+        // 添加 48 小时
+        const newTime = new Date(originTime.getTime() + 48 * 60 * 60 * 1000);
+        console.log("添加48小时后的时间:", newTime);
+        
+        // 格式化输出
+        const formattedYear = newTime.getFullYear();
+        const formattedMonth = String(newTime.getMonth() + 1).padStart(2, '0');
+        const formattedDay = String(newTime.getDate()).padStart(2, '0');
+        const formattedHours = String(newTime.getHours()).padStart(2, '0');
+        const formattedMinutes = String(newTime.getMinutes()).padStart(2, '0');
+        const formattedSeconds = String(newTime.getSeconds()).padStart(2, '0');
+        
+        const formattedDate = `${formattedYear}-${formattedMonth}-${formattedDay} ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+        console.log("最终格式化的日期:", formattedDate);
+        
+        return formattedDate;
+    } catch (error) {
+        console.error("计算截止日期时出错:", error);
+        return '无法计算截止时间';
+    }
+});
 	const goodsId = ref('')
 	//跳转首页
 	const toHome = () => {

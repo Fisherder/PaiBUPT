@@ -1,7 +1,7 @@
 /**
  * 修改后的地图服务工具类，增加了多点标记和线路展示功能
  */
-const MAP_KEY = 'YDKBZ-DCBCV-7G7PP-5JU5D-LNN6T-Q3FJ7'; // 替换为你申请的腾讯地图密钥
+const MAP_KEY = 'VJWBZ-RNGKV-LBYPK-5ZFCK-5SB6Q-KNFOR'; // 替换为你申请的腾讯地图密钥
 
 // 地理编码 - 将地址转换为经纬度
 export const geocoder = (address) => {

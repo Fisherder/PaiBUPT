@@ -32,7 +32,11 @@
 				<u-input placeholder="请输入微信号" v-model="addModel.wxNum" />
 			</u-form-item>
 			<u-form-item prop="address" label-width="auto" label="联系地址:">
-				<u-input v-model="addModel.address" />
+				<view class="address-input-container">
+					<u-input v-model="addModel.address" placeholder="请输入或选择地址" />
+					<u-button @click="chooseLocation" size="mini" type="primary"
+						class="choose-location-btn">选择位置</u-button>
+				</view>
 			</u-form-item>
 			<u-form-item prop="image" label="图片:"></u-form-item>
 			<u-upload ref="imgRef" :file-list="fileList" @on-remove="onRemove" @on-change="onChange"
@@ -51,6 +55,8 @@
 		onReady
 	} from '@dcloudio/uni-app'
 	import http from '../../common/http.js'
+	// 在script部分添加
+	import mapService from '../../utils/map-service';
 	import {
 		categoryApi,
 		editApi
@@ -137,6 +143,42 @@
 		marginTop: '50px',
 		width: '100%'
 	})
+	// 选择位置方法
+	const chooseLocation = () => {
+		uni.chooseLocation({
+			success: function(res) {
+				console.log('选择位置成功:', res);
+				addModel.address = res.address;
+	
+				// 可以保存经纬度以提高位置精确性
+				if (!addModel.locationInfo) {
+					addModel.locationInfo = {};
+				}
+				addModel.locationInfo.latitude = res.latitude;
+				addModel.locationInfo.longitude = res.longitude;
+				addModel.locationInfo.name = res.name;
+			},
+			fail: function(err) {
+				console.error('选择位置失败:', err);
+				if (err.errMsg.indexOf('auth deny') >= 0) {
+					uni.showModal({
+						title: '提示',
+						content: '需要授权获取位置信息才能选择位置',
+						confirmText: '去设置',
+						success: (res) => {
+							if (res.confirm) {
+								uni.openSetting({
+									success: (settingRes) => {
+										console.log('设置结果:', settingRes);
+									}
+								});
+							}
+						}
+					});
+				}
+			}
+		});
+	};
 	//图片上传路径
 	const action = ref(http.baseUrl + "/api/upload/uploadImage")
 	//存储图片路径

@@ -25,9 +25,10 @@ public class GoodsController {
     @Autowired
     private ElasticsearchService elasticsearchService;
     //发布
+    // 只修改相关的release方法
     @PostMapping("/release")
     public ResultVo release(@RequestBody Goods goods){
-//设置时间
+        // 设置时间为当前完整时间（包括时分秒）
         goods.setCreateTime(new Date());
         if(goodsService.save(goods)){
             // 同步到Elasticsearch

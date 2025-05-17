@@ -50,8 +50,8 @@ public class Goods {
     private String status;
     //0：未出售 1：已出售
     private String sellStatus;
-    //创建时间
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    //创建时间 - 修改注解为完整日期时间格式
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     //交易时间
 //    @TableField(exist = false)
@@ -67,6 +67,6 @@ public class Goods {
     private Long collectId;
     //交易时间
     @TableField(exist = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date sellTime;
 }
